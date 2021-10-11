@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Producto X",
+    "price": 2000,
+    "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
+    "id": 1
+  },
+  {
+    "title": "Producto X",
+    "price": 5000,
+    "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
+    "id": 2
+  },
+  {
+    "title": "Producto X",
+    "price": 1000,
+    "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
+    "id": 3
+  },
+  {
+    "title": "Producto X",
+    "price": 1000,
+    "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
+    "id": 4
+  }
+]
