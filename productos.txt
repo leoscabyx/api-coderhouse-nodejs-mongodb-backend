@@ -22,5 +22,11 @@
     "price": 1000,
     "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
     "id": 4
+  },
+  {
+    "title": "Producto Act",
+    "price": 11,
+    "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
+    "id": 5
   }
 ]

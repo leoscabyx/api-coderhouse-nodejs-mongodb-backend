@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BackEnd 17035</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <main>
+        <section>
+            <h2>Agregar Producto</h2>
+            <form action="/api/productos/uploadfile" method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="title">Nombre:</label>
+                    <input type="text" name="title" id="title" placeholder="Ingresar producto" required>
+                </div>
+                <div>
+                    <label for="title">Precio:</label>
+                    <input type="number" name="title" id="title" placeholder="Ingresar precio" required>
+                </div>
+                <div>
+                    <label for="thumbnail">Foto:</label>
+                    <input type="file" name="thumbnail" id="thumbnail" required>
+                </div>
+                <button>Enviar</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

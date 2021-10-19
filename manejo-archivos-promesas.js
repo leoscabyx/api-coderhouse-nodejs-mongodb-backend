@@ -9,7 +9,7 @@ class Contenedor {
         try {
             await fs.promises.writeFile(this.archivo, JSON.stringify([]))
         } catch (error) {
-            
+            console.log(error)
         }
     }
 
@@ -23,10 +23,10 @@ class Contenedor {
         fs.access(this.archivo, (error) => {
             console.log(error)
             if (error){
-                console.error('File does not exist');
+                console.error('Archivo TXT NO existe');
                 this.crearArchivo()
             } else {
-                console.log('File does exist');
+                console.log('Archivo TXT existe');
             }
         })
         
@@ -60,7 +60,7 @@ class Contenedor {
     async getById(id) {
         const obtenerProductos = await this.getAll()
         if(obtenerProductos && obtenerProductos.length > 0) {
-            const productoEncontrado = obtenerProductos.find(item => item.id === id)
+            const productoEncontrado = obtenerProductos.find(item => item.id === id - 1)
             return productoEncontrado
         }else{
             return null
@@ -82,6 +82,7 @@ class Contenedor {
     }
     /* Elimina del archivo el objeto con el id buscado */
     async deleteById(id) {
+        console.log(id)
         const obtenerProductos = await this.getAll()
         /* console.log(Array.isArray(obtenerProductos))
         console.log(obtenerProductos.filter(item => item.id !== id))
@@ -102,7 +103,20 @@ class Contenedor {
             console.log(error)
         }
     }
+    /* Actualizar un producto segun su id */
+    async updateById(producto, id) {
+        const obtenerProductos = await this.getAll()
 
+        if(obtenerProductos && obtenerProductos.length > 0) {
+            producto.id = id
+            obtenerProductos[id - 1] = producto
+            console.log(obtenerProductos)
+            await fs.promises.writeFile(this.archivo, JSON.stringify(obtenerProductos, null, 2))
+            return obtenerProductos.find(item => item.id === id)
+        }else{
+            return null
+        }
+    }
 }
 
 /* const contenedorProductos = new Contenedor('./productos.txt') */

@@ -1,5 +1,5 @@
 {
-  "name": "3-Clase",
+  "name": "proyecto-final",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,6 +14,7 @@
     "nodemon": "^2.0.13"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "multer": "^1.4.3"
   }
 }
