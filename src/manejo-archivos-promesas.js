@@ -60,7 +60,9 @@ class Contenedor {
     async getById(id) {
         const obtenerProductos = await this.getAll()
         if(obtenerProductos && obtenerProductos.length > 0) {
-            const productoEncontrado = obtenerProductos.find(item => item.id === id - 1)
+            // console.log(id - 1)
+            // console.log(obtenerProductos.find(item => item.id === id))
+            const productoEncontrado = obtenerProductos.find(item => item.id === id)
             return productoEncontrado
         }else{
             return null
@@ -82,15 +84,17 @@ class Contenedor {
     }
     /* Elimina del archivo el objeto con el id buscado */
     async deleteById(id) {
-        console.log(id)
+        /* console.log(typeof id) */
         const obtenerProductos = await this.getAll()
         /* console.log(Array.isArray(obtenerProductos))
         console.log(obtenerProductos.filter(item => item.id !== id))
         return */
         if(obtenerProductos && obtenerProductos.length > 0) {
-            const productos = obtenerProductos.filter(item => item.id !== id)
+            const productoEliminado = obtenerProductos.find(item => item.id === parseInt(id))
+            const productos = obtenerProductos.filter(item => item.id !== parseInt(id))
             await fs.promises.writeFile(this.archivo, JSON.stringify(productos, null, 2))
-            return obtenerProductos.find(item => item.id === id)
+            /* console.log(productoEliminado) */
+            return productoEliminado
         }else{
             return null
         }

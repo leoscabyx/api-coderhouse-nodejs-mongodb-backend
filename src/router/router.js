@@ -1,12 +1,12 @@
 const { Router } = require('express');
 const multer = require('multer')
 
-const Contenedor = require('./manejo-archivos-promesas')
-const contenedorProductos = new Contenedor('./productos.txt')
+const Contenedor = require('../manejo-archivos-promesas')
+const contenedorProductos = new Contenedor('./src/productos.txt')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'uploads')
+      cb(null, 'src/uploads')
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname)
@@ -55,9 +55,25 @@ router.get('/:id', async (req, res) => {
     console.log('Devolver todos los productos')
 })
 
-router.post('/', async (req, res) => {
-
-    const { title, price, thumbnail } = req.body
+router.post('/', upload.single('thumbnail'), async (req, res, next) => {
+    // console.log(req.body)
+    // console.log(req.file)
+    const file = req.file
+    let thumbnail = null
+    if (!file) {
+      const error = new Error('Please upload a file')
+      error.httpStatusCode = 400
+      return next(error)
+    }
+    if(file){
+        const {filename, destination} = req.file
+        thumbnail = "http://localhost:8080/uploads/" + filename
+    }else if (req.body.thumbnail) {
+        thumbnail = req.body.thumbnail
+    }
+    // console.log("http://localhost:8080/uploads/" + filename)
+    // res.send('Ok')
+    const { title, price } = req.body
     const productoNuevo = { title, price, thumbnail }
     const id = await contenedorProductos.save(productoNuevo)
     res.send({ producto: productoNuevo, id })
@@ -84,6 +100,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const { id } = req.params
+    
     const productos = await contenedorProductos.getAll()
 
     if (isNaN(id)) {
@@ -94,21 +111,11 @@ router.delete('/:id', async (req, res) => {
         return res.json({ error: 'El ID esta fuera del rango' })
     }
 
-    await contenedorProductos.deleteById(id)
+    const producto = await contenedorProductos.deleteById(id)
 
-    // res.json(producto)
+    res.json(producto)
 
     // res.send('ok')
-})
-
-router.post('/uploadfile', upload.single('thumbnail'), (req, res, next) => {
-    const file = req.file
-    if (!file) {
-      const error = new Error('Please upload a file')
-      error.httpStatusCode = 400
-      return next(error)
-    }
-    res.send(file)
 })
 
 module.exports = router;

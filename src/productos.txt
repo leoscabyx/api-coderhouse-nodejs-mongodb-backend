@@ -28,5 +28,11 @@
     "price": 11,
     "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
     "id": 5
+  },
+  {
+    "title": "asdasd",
+    "price": "222",
+    "thumbnail": "http://localhost:8080/uploads/casa.svg",
+    "id": 6
   }
 ]

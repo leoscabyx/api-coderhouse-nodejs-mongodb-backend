@@ -1,21 +1,16 @@
 const express = require('express')
 
-const router = require("./router.js")
-
+const router = require("./router/router")
 
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-app.use('/static', express.static('public'))
+app.use('/', express.static('public'))
+app.use('/uploads', express.static('src/uploads'))
 
 app.use('/api/productos', router)
-
-app.get('/', (req, respuesta) => {
-    respuesta.send('HolaMundo')
-    console.log('prueba')
-})
 
 const PORT = process.env.PORT || 8080
 
