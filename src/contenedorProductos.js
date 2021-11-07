@@ -123,20 +123,6 @@ class Contenedor {
     }
 }
 
-/* const contenedorProductos = new Contenedor('./productos.txt') */
-
-/* const nuevoProducto = {
-    title: 'Producto X',
-    price: 1000,
-    thumbnail: 'https://coder-conf.com/_nuxt/img/astronauta.84dff61.png'
-} */
-
-
-/* contenedorProductos.save(nuevoProducto).then(data => console.log(data)) */ 
-/* contenedorProductos.getAll().then(data => console.log(data)) */
-/* contenedorProductos.getById(2).then(data => console.log(data)) */
-/* contenedorProductos.deleteById(2).then(data => console.log(data)) */
-
 
 module.exports = Contenedor
 /* export default Contenedor Hay que convertirlo con babel */

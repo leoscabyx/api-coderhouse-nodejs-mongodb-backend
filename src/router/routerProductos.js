@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const multer = require('multer')
 
-const Contenedor = require('../manejo-archivos-promesas')
+const Contenedor = require('../contenedorProductos')
 const contenedorProductos = new Contenedor('./src/productos.txt')
 
 const storage = multer.diskStorage({
@@ -14,22 +14,10 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
-// app.post('/uploadfile', upload.single('thumbnail'), (req, res, next) => {
-//     const file = req.file
-//     if (!file) {
-//     const error = new Error('Please upload a file')
-//     error.httpStatusCode = 400
-//     return next(error)
-//     }
-//     res.send(file)
-// })
-
 const router = Router();
 
 router.get('/', async (req, res) => {
     const productos = await contenedorProductos.getAll()
-
-    /* console.log(await contenedorProductos.getAll()) */
     res.json(productos)
     console.log('Devolver todos los productos')
 })
@@ -50,38 +38,48 @@ router.get('/:id', async (req, res) => {
 
     const producto = await contenedorProductos.getById(id)
 
-    /* console.log(await contenedorProductos.getAll()) */
     res.json(producto)
     console.log('Devolver todos los productos')
 })
 
 router.post('/', upload.single('thumbnail'), async (req, res, next) => {
-    // console.log(req.body)
-    // console.log(req.file)
     const file = req.file
     let thumbnail = null
+    /* Falta comprobar o validar si no envian la imagen por formulario permitir validar si la estan enviando como json la ruta porque si no siempre me va a dar error al preguntar por req.file ya que la informacion no viene de un formulario */
+    /* console.log(file)
     if (!file) {
       const error = new Error('Please upload a file')
       error.httpStatusCode = 400
       return next(error)
-    }
+    } */
     if(file){
-        const {filename, destination} = req.file
+        const { filename } = req.file
         thumbnail = "http://localhost:8080/uploads/" + filename
     }else if (req.body.thumbnail) {
         thumbnail = req.body.thumbnail
+    }else{
+        const error = new Error('Please upload a file')
+        error.httpStatusCode = 400
+        return next(error)
     }
-    // console.log("http://localhost:8080/uploads/" + filename)
-    // res.send('Ok')
-    const { title, price } = req.body
-    const productoNuevo = { title, price, thumbnail }
+
+    const { title, description, code, price, stock } = req.body
+    const productoNuevo = {
+        timestamp: Date.now(), 
+        title,
+        description,
+        code,
+        price, 
+        thumbnail,
+        stock
+    }
     const id = await contenedorProductos.save(productoNuevo)
     res.send({ producto: productoNuevo, id })
 })
 
 router.put('/:id', async (req, res) => {
     const { id } = req.params
-    const { title, price, thumbnail } = req.body
+    const { title, description, code, price, stock, thumbnail } = req.body
     const productos = await contenedorProductos.getAll()
 
     if (isNaN(id)) {
@@ -92,14 +90,15 @@ router.put('/:id', async (req, res) => {
         return res.json({ error: 'El ID esta fuera del rango' })
     }
 
-    const producto = { title, price, thumbnail }
+    const producto = { title, description, code, price, stock, thumbnail }
     const productoActualizado = await contenedorProductos.updateById(producto, id)
 
     res.json({ productoActualizado, id })
 })
 
 router.delete('/:id', async (req, res) => {
-    const { id } = req.params
+    
+    const id = parseInt(req.params.id)
     
     const productos = await contenedorProductos.getAll()
 

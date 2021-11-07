@@ -1,6 +1,7 @@
 const express = require('express')
 
-const router = require("./router/router")
+const routerProductos = require("./router/routerProductos")
+const routerCarrito = require("./router/routerCarrito")
 
 const app = express()
 
@@ -10,7 +11,8 @@ app.use(express.urlencoded({extended: true}))
 app.use('/', express.static('public'))
 app.use('/uploads', express.static('src/uploads'))
 
-app.use('/api/productos', router)
+app.use('/api/productos', routerProductos)
+app.use('/api/carrito', routerCarrito)
 
 const PORT = process.env.PORT || 8080
 
