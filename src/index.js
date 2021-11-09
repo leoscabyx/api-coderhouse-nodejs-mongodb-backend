@@ -14,6 +14,11 @@ app.use('/uploads', express.static('src/uploads'))
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
 
+/* Manejar cualquier ruta que no este implementada en el servidor */
+app.all('*', (req, res) => {
+    res.json({ error : -2, descripcion: `ruta '${req.url}' método ${req.method} no implementada`})
+})
+
 const PORT = process.env.PORT || 8080
 
 const server = app.listen(PORT, () => {
