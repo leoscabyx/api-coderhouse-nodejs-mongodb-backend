@@ -2,8 +2,8 @@ const { Router } = require('express');
 
 const router = Router();
 
-const Contenedor = require('../contenedorCarrito')
-const contenedorCarrito = new Contenedor('./src/carrito.txt')
+const Contenedor = require('../contenedores/contenedorCarrito')
+const contenedorCarrito = new Contenedor('./src/DB/carrito.txt')
 
 
 router.get('/', async (req, res) => {

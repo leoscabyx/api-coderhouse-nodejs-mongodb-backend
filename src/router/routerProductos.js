@@ -1,8 +1,17 @@
 const { Router } = require('express');
 const multer = require('multer')
 
-const Contenedor = require('../contenedorProductos')
-const contenedorProductos = new Contenedor('./src/productos.txt')
+const ContenedorKnex = require('../contenedores/contenedorKnex')
+const contenedorProductos = new ContenedorKnex({
+    client: 'mysql',
+    connection: {
+      host : '127.0.0.1',
+      port : 3306,
+      user : 'leoscabyx',
+      password : 'leoscabyx',
+      database : 'coderhouse'
+    }
+}, 'productos')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -16,7 +25,7 @@ const upload = multer({ storage })
 
 const router = Router();
 
-const administrador = false
+const administrador = true
 
 router.get('/', async (req, res) => {
     const productos = await contenedorProductos.getAll()
@@ -26,14 +35,16 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const id = parseInt(req.params.id)
-    console.log(typeof id, id)
+    // console.log(typeof id, id)
     const productos = await contenedorProductos.getAll()
+    const arraysID = productos.map(prod => prod.id)
+    // console.log(arraysID)
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
     }
 
-    if (id < 1 || id > productos.length) {
+    if (!arraysID.includes(id)) {
         console.log('upss')
         return res.json({ error: 'El ID esta fuera del rango' })
     }
@@ -72,10 +83,11 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
             title,
             description,
             code,
-            price, 
+            price: parseFloat(price), 
             thumbnail,
             stock
         }
+        console.log(productoNuevo)
         const id = await contenedorProductos.save(productoNuevo)
         res.send({ producto: productoNuevo, id })
     }else{
@@ -85,15 +97,16 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
 
 router.put('/:id', async (req, res) => {
     if (administrador) {
-        const { id } = req.params
+        const id  = parseInt(req.params.id)
         const { title, description, code, price, stock, thumbnail } = req.body
         const productos = await contenedorProductos.getAll()
+        const arraysID = productos.map(prod => prod.id)
     
         if (isNaN(id)) {
             return res.json({ error: 'El ID no es un numero' })
         }
     
-        if (id < 1 || id > productos.length) {
+        if (!arraysID.includes(id)) {
             return res.json({ error: 'El ID esta fuera del rango' })
         }
     
@@ -111,20 +124,20 @@ router.delete('/:id', async (req, res) => {
         const id = parseInt(req.params.id)
     
         const productos = await contenedorProductos.getAll()
+        const arraysID = productos.map(prod => prod.id)
     
         if (isNaN(id)) {
             return res.json({ error: 'El ID no es un numero' })
         }
     
-        if (id < 1 || id > productos.length) {
+        if (!arraysID.includes(id)) {
             return res.json({ error: 'El ID esta fuera del rango' })
         }
     
         const producto = await contenedorProductos.deleteById(id)
     
         res.json(producto)
-    
-        // res.send('ok')
+
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.originalUrl}' método ${req.method} no autorizada`})
     }
