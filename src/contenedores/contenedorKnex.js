@@ -3,7 +3,7 @@ const knex = require('knex')
 class contenedorKnex {
     constructor(options, table){
         this.options = options
-        this.table = table 
+        this.table = table
     }
 
     async createtable() {
@@ -14,20 +14,31 @@ class contenedorKnex {
             const hasTable = await sql.schema.hasTable(table);
 
             if(!hasTable){
-                await sql.schema.createTable(table, function(t) {
-                    t.increments('id').primary();
-                    t.string('timestamp');
-                    t.string('title', 80);
-                    t.string('description', 160);
-                    t.string('code', 10);
-                    t.float('price');
-                    t.text('thumbnail');
-                    t.integer('stock');
-                })
-                console.log('Tabla creada')
+                if(this.table === 'productos'){
+                    await sql.schema.createTable(table, function(t) {
+                        t.increments('id').primary();
+                        t.string('timestamp');
+                        t.string('title', 80);
+                        t.string('description', 160);
+                        t.string('code', 10);
+                        t.float('price', 20, 2);
+                        t.text('thumbnail');
+                        t.integer('stock');
+                    })
+                }
+
+                if(this.table === 'mensajes'){
+                    await sql.schema.createTable(table, function(t) {
+                        t.increments('id').primary();
+                        t.string('fecha');
+                        t.string('email', 150);
+                        t.text('msj');
+                    })
+                }
+                console.log('Tabla creada', this.table)
                 // sql.destroy()
             }else{
-                console.log('Tabla encontrada')
+                console.log('Tabla encontrada', this.table)
                 // sql.destroy()
             }
         } catch (error) {
@@ -36,10 +47,10 @@ class contenedorKnex {
     }
 
     /* Recibe un objeto, lo guarda en el archivo, devuelve el id asignado */
-    async save(producto) {
-        if (typeof producto !== 'object') return console.log('El valor esperado es un objeto')
-        if (Array.isArray(producto)) return console.log('El valor esperado es un objeto clave/valor no un array')
-        if (Object.keys(producto).length === 0) return console.log('El objeto esta vacio')
+    async save(objetoNuevo) {
+        if (typeof objetoNuevo !== 'object') return console.log('El valor esperado es un objeto')
+        if (Array.isArray(objetoNuevo)) return console.log('El valor esperado es un objeto clave/valor no un array')
+        if (Object.keys(objetoNuevo).length === 0) return console.log('El objeto esta vacio')
 
         await this.createtable()
 
@@ -50,12 +61,12 @@ class contenedorKnex {
             const hasTable = await sql.schema.hasTable(table);
             
             if(hasTable){
-                const [id]  = await sql(table).insert(producto)
+                const [id]  = await sql(table).insert(objetoNuevo)
                 
                 return id
-                // const productos = await sql.select().table(table)
-                // console.log(productos, result)
-                sql.destroy()
+                // const registros = await sql.select().table(table)
+                // console.log(registros, result)
+                // sql.destroy()
             }
         } catch (error) {
             console.log(error)
@@ -81,7 +92,8 @@ class contenedorKnex {
     }
 
     /* Devuelve un array con los objetos presentes en la DB */
-    async getAll() {   
+    async getAll() {  
+               
         try {
             const sql = knex(this.options)
             const table = this.table
@@ -89,10 +101,10 @@ class contenedorKnex {
             const hasTable = await sql.schema.hasTable(table);
             
             if(hasTable){
-                const productos = await sql.select().table(table)
-                // console.log(productos)
-                sql.destroy()
-                return productos
+                const registros = await sql.select().table(table)
+                // console.log(registros)
+                // sql.destroy()
+                return registros
             }else{
                 return null
             }
@@ -108,11 +120,11 @@ class contenedorKnex {
             const sql = knex(this.options)
             const table = this.table
 
-            const [productoEliminado] = await sql(table).where({ id: id })
+            const [elementoEliminado] = await sql(table).where({ id: id })
             const result = await sql(table).where({ id: id }).del()
-            console.log(result, productoEliminado)
+            console.log(result, elementoEliminado)
             if(result) {
-                return productoEliminado
+                return elementoEliminado
             }else{
                 return null
             }
@@ -122,14 +134,14 @@ class contenedorKnex {
     }
 
     /* Actualizar un producto segun su id */
-    async updateById(producto, id) {
+    async updateById(objetoActualizado, id) {
         try {
             const sql = knex(this.options)
             const table = this.table
 
+            const result = await sql(table).where({ id: id }).update(objetoActualizado)
             const [productoActualizado] = await sql(table).where({ id: id })
-            const result = await sql(table).where({ id: id }).update(producto)
-            console.log(result, productoActualizado)
+            // console.log(result, productoActualizado)
             if(result) {
                 return productoActualizado
             }else{
@@ -142,39 +154,3 @@ class contenedorKnex {
 }
 
 module.exports = contenedorKnex;
-
-const sql = new contenedorKnex({
-    client: 'mysql',
-    connection: {
-      host : '127.0.0.1',
-      port : 3306,
-      user : 'leoscabyx',
-      password : 'leoscabyx',
-      database : 'coderhouse'
-    }
-}, 'productos')
-
-
-// sql.save({
-//     "title": "Producto 11",
-//     "description": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias, provident!",
-//     "code": "00AA11",
-//     "price": 1111,
-//     "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
-//     "stock": 11
-// })
-
-// sql.getAll()
-
-// sql.getById(1)
-
-// sql.deleteById(5)
-
-// sql.updateById({
-//     "title": "Producto 33",
-//     "description": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias, provident!",
-//     "code": "00AA33",
-//     "price": 3333,
-//     "thumbnail": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png",
-//     "stock": 33
-// }, 2)

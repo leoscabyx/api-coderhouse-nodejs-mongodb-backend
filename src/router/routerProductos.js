@@ -25,7 +25,8 @@ const upload = multer({ storage })
 
 const router = Router();
 
-const administrador = true
+/* Cambiar a true para probar algunas rutas no autorizadas (Post, Put y Delete) */
+const administrador = false
 
 router.get('/', async (req, res) => {
     const productos = await contenedorProductos.getAll()
@@ -46,7 +47,7 @@ router.get('/:id', async (req, res) => {
 
     if (!arraysID.includes(id)) {
         console.log('upss')
-        return res.json({ error: 'El ID esta fuera del rango' })
+        return res.json({ error: 'El ID esta fuera del rango o no existe' })
     }
 
     const producto = await contenedorProductos.getById(id)
@@ -59,13 +60,7 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
     if (administrador) {
         const file = req.file
         let thumbnail = null
-        /* Falta comprobar o validar si no envian la imagen por formulario permitir validar si la estan enviando como json la ruta porque si no siempre me va a dar error al preguntar por req.file ya que la informacion no viene de un formulario */
-        /* console.log(file)
-        if (!file) {
-          const error = new Error('Please upload a file')
-          error.httpStatusCode = 400
-          return next(error)
-        } */
+        /* Tengo una Duda: Como comprobar o validar si no envian la imagen por formulario permitir validar si la estan enviando como json la ruta porque si no siempre me va a dar error al preguntar por req.file ya que la informacion no viene de un formulario */
         if(file){
             const { filename } = req.file
             thumbnail = "http://localhost:8080/uploads/" + filename
@@ -87,7 +82,7 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
             thumbnail,
             stock
         }
-        console.log(productoNuevo)
+        // console.log(productoNuevo)
         const id = await contenedorProductos.save(productoNuevo)
         res.send({ producto: productoNuevo, id })
     }else{
@@ -107,10 +102,17 @@ router.put('/:id', async (req, res) => {
         }
     
         if (!arraysID.includes(id)) {
-            return res.json({ error: 'El ID esta fuera del rango' })
+            return res.json({ error: 'El ID esta fuera del rango o no existe' })
         }
     
-        const producto = { title, description, code, price, stock, thumbnail }
+        const producto = {
+            timestamp: Date.now(),
+            title,
+            description,
+            code,
+            price,
+            stock,
+            thumbnail }
         const productoActualizado = await contenedorProductos.updateById(producto, id)
     
         res.json({ productoActualizado, id })
@@ -131,12 +133,12 @@ router.delete('/:id', async (req, res) => {
         }
     
         if (!arraysID.includes(id)) {
-            return res.json({ error: 'El ID esta fuera del rango' })
+            return res.json({ error: 'El ID esta fuera del rango o no existe' })
         }
     
         const producto = await contenedorProductos.deleteById(id)
     
-        res.json(producto)
+        res.json({productoEliminado: producto})
 
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.originalUrl}' método ${req.method} no autorizada`})

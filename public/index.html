@@ -6,27 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BackEnd 17035</title>
     <link rel="stylesheet" href="css/estilos.css">
+    <script src="./socket.io/socket.io.js"></script>
 </head>
 <body>
     <main>
         <section>
-            <h2>Agregar Producto</h2>
-            <form action="/api/productos" method="post" enctype="multipart/form-data">
+            <h2>Centro de Mensajes</h2>
+            <form action="/" method="post" id="formulario2">
                 <div>
-                    <label for="title">Nombre:</label>
-                    <input type="text" name="title" id="title" placeholder="Ingresar producto" required>
+                    <input type="email" name="email" placeholder="Ingresar email..." required value="leo@gmail.com">
                 </div>
                 <div>
-                    <label for="price">Precio:</label>
-                    <input type="number" name="price" id="price" placeholder="Ingresar precio" required>
-                </div>
-                <div>
-                    <label for="thumbnail">Foto:</label>
-                    <input type="file" name="thumbnail" id="thumbnail">
+                    <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
                 </div>
                 <button>Enviar</button>
             </form>
+            <div id="msjs"></div>
         </section>
     </main>
+
+    <script>
+        const socket = io()
+        const form2 = document.querySelector('#formulario2')
+        const divMsjs = document.querySelector('#msjs')
+
+        form2.addEventListener('submit', (e) => {
+            e.preventDefault()
+            let email = e.target[0].value
+            let msj = e.target[1].value
+            let fecha = new Date()
+            const nuevoMsj = { email, msj, fecha }
+            // console.log(nuevoMsj)
+            socket.emit('msj', nuevoMsj)
+        })
+
+        socket.on('msjs', (data) => {
+            console.log(data)
+            if(data.length > 0){
+                console.log(data)
+                let divHTML = ''
+                data.map( (msj) => {
+                divHTML += `
+                    <div class="msj" >
+                        <span class="msj__email">${msj.email}</span>
+                        <span class="msj__fecha">${msj.fecha}:</span>
+                        <span class="msj__texto">${msj.msj}</span>
+                    </div>
+                    `
+                })
+                divMsjs.innerHTML = divHTML
+            }else{
+                divMsjs.innerHTML = 'No hay msjs'
+            }
+        })
+    </script>
 </body>
 </html>

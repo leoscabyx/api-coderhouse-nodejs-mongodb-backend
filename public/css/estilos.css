@@ -23,12 +23,11 @@ section {
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 20px;
 }
 
 section h2 {
-    font-size: 40px;
+    font-size: 32px;
     color: #F9F9F9;
 }
 
@@ -49,7 +48,7 @@ form label {
     font-size: 20px;
 }
 
-form [type="text"], form [type="number"] {
+form [type="text"], form [type="number"], form [type="email"] {
     padding: 10px;
     border: 1px solid rgb(98,41,56);
 }
@@ -66,4 +65,36 @@ form button {
     color: #F9F9F9;
     border: none;
     cursor: pointer;
+}
+
+#msjs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.msj {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: #FAFAFA;
+    border-radius: 5px;
+}
+
+.msj__email {
+    color: rgb(98,41,56);
+    font-weight: 700;
+    width: 100%;
+}
+
+.msj__fecha {
+    color: rgb(98,41,56);
+    font-size: 10px;
+}
+
+.msj__texto {
+    font-style: italic;
+    color: #323232;
+    width: 100%;
 }
