@@ -1,10 +1,11 @@
-const express = require('express')
-const { Server: HttpServer } = require('http')
-const { Server: IOServer } = require('socket.io')
+import express from 'express'
+import { Server as HttpServer } from 'http'
+import { Server as IOServer } from 'socket.io'
 
-const routerProductos = require("./router/routerProductos")
-const routerCarrito = require("./router/routerCarrito")
-const ContenedorKnex = require('./contenedores/contenedorKnex')
+import routerProductos from './router/routerProductos.js'
+import routerCarrito from './router/routerCarrito.js'
+import ContenedorKnex from './contenedores/contenedorKnex.js'
+
 const contenedorMsjs = new ContenedorKnex({
     client: 'sqlite3',
     connection: { filename: './src/DB/mydb.sqlite' },
@@ -36,7 +37,6 @@ io.on('connection', async (socket) => {
 
     socket.on('msj', async (mensajeNuevo) => {
         try {
-            // console.log(mensajeNuevo)
             await contenedorMsjs.save(mensajeNuevo)
             const msjs = await contenedorMsjs.getAll()
 
@@ -47,7 +47,6 @@ io.on('connection', async (socket) => {
     })
 
     const getMsjs = await contenedorMsjs.getAll()
-    // console.log(getMsjs)
     socket.emit('msjs', getMsjs)
 })
 

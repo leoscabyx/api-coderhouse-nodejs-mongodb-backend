@@ -1,17 +1,9 @@
-const { Router } = require('express');
-const multer = require('multer')
+import { Router } from 'express'
+import multer from 'multer'
 
-const ContenedorKnex = require('../contenedores/contenedorKnex')
-const contenedorProductos = new ContenedorKnex({
-    client: 'mysql',
-    connection: {
-      host : '127.0.0.1',
-      port : 3306,
-      user : 'leoscabyx',
-      password : 'leoscabyx',
-      database : 'coderhouse'
-    }
-}, 'productos')
+import { instanciasDaos } from '../daos/index.js'
+
+const DaoProductos = instanciasDaos.DaoProductos 
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -25,35 +17,32 @@ const upload = multer({ storage })
 
 const router = Router();
 
-/* Cambiar a true para probar algunas rutas no autorizadas (Post, Put y Delete) */
-const administrador = false
+/* Cambiar a false para probar algunas rutas no autorizadas (Post, Put y Delete) */
+const administrador = true
 
 router.get('/', async (req, res) => {
-    const productos = await contenedorProductos.getAll()
-    res.json(productos)
-    console.log('Devolver todos los productos')
+    const productos = await DaoProductos.getAll()
+    res.json({msj: 'Todos los productos', productos})
+    // console.log('Get /api/productos')
 })
 
 router.get('/:id', async (req, res) => {
     const id = parseInt(req.params.id)
-    // console.log(typeof id, id)
-    const productos = await contenedorProductos.getAll()
+    const productos = await DaoProductos.getAll()
     const arraysID = productos.map(prod => prod.id)
-    // console.log(arraysID)
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
     }
 
     if (!arraysID.includes(id)) {
-        console.log('upss')
         return res.json({ error: 'El ID esta fuera del rango o no existe' })
     }
 
-    const producto = await contenedorProductos.getById(id)
+    const producto = await DaoProductos.getById(id)
 
-    res.json(producto)
-    console.log('Devolver todos los productos')
+    res.json({msj: 'Producto por su ID', producto})
+    // console.log('Get /api/productos/:id')
 })
 
 router.post('/', upload.single('thumbnail'), async (req, res, next) => {
@@ -73,28 +62,21 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
         }
     
         const { title, description, code, price, stock } = req.body
-        const productoNuevo = {
-            timestamp: Date.now(), 
-            title,
-            description,
-            code,
-            price: parseFloat(price), 
-            thumbnail,
-            stock
-        }
-        // console.log(productoNuevo)
-        const id = await contenedorProductos.save(productoNuevo)
-        res.send({ producto: productoNuevo, id })
+
+        const id = await DaoProductos.save({ title, description, code, price: parseFloat(price), thumbnail, stock })
+
+        res.send({ msj: 'Se ha creado un nuevo producto y se devuelve su ID', id })
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
+    // console.log('Post /api/productos')
 })
 
 router.put('/:id', async (req, res) => {
     if (administrador) {
         const id  = parseInt(req.params.id)
         const { title, description, code, price, stock, thumbnail } = req.body
-        const productos = await contenedorProductos.getAll()
+        const productos = await DaoProductos.getAll()
         const arraysID = productos.map(prod => prod.id)
     
         if (isNaN(id)) {
@@ -113,19 +95,20 @@ router.put('/:id', async (req, res) => {
             price,
             stock,
             thumbnail }
-        const productoActualizado = await contenedorProductos.updateById(producto, id)
+        const productoActualizado = await DaoProductos.updateById(producto, id)
     
-        res.json({ productoActualizado, id })
+        res.json({msj: 'Producto Actualizado', producto: productoActualizado})
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
+    // console.log('Put /api/productos/:id')
 })
 
 router.delete('/:id', async (req, res) => {
     if (administrador) {
         const id = parseInt(req.params.id)
     
-        const productos = await contenedorProductos.getAll()
+        const productos = await DaoProductos.getAll()
         const arraysID = productos.map(prod => prod.id)
     
         if (isNaN(id)) {
@@ -136,13 +119,14 @@ router.delete('/:id', async (req, res) => {
             return res.json({ error: 'El ID esta fuera del rango o no existe' })
         }
     
-        const producto = await contenedorProductos.deleteById(id)
+        const productoEliminado = await DaoProductos.deleteById(id)
     
-        res.json({productoEliminado: producto})
+        res.json({msj: 'Producto Eliminado', producto: productoEliminado})
 
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.originalUrl}' método ${req.method} no autorizada`})
     }
+    // console.log('Delete /api/productos/:id')
 })
 
-module.exports = router;
+export default router
