@@ -1,4 +1,4 @@
-const knex = require('knex')
+import knex from 'knex'
 
 class contenedorKnex {
     constructor(options, table){
@@ -37,9 +37,6 @@ class contenedorKnex {
                 }
                 console.log('Tabla creada', this.table)
                 // sql.destroy()
-            }else{
-                console.log('Tabla encontrada', this.table)
-                // sql.destroy()
             }
         } catch (error) {
             console.log(error)
@@ -64,9 +61,6 @@ class contenedorKnex {
                 const [id]  = await sql(table).insert(objetoNuevo)
                 
                 return id
-                // const registros = await sql.select().table(table)
-                // console.log(registros, result)
-                // sql.destroy()
             }
         } catch (error) {
             console.log(error)
@@ -102,8 +96,6 @@ class contenedorKnex {
             
             if(hasTable){
                 const registros = await sql.select().table(table)
-                // console.log(registros)
-                // sql.destroy()
                 return registros
             }else{
                 return null
@@ -141,7 +133,7 @@ class contenedorKnex {
 
             const result = await sql(table).where({ id: id }).update(objetoActualizado)
             const [productoActualizado] = await sql(table).where({ id: id })
-            // console.log(result, productoActualizado)
+
             if(result) {
                 return productoActualizado
             }else{
@@ -153,4 +145,4 @@ class contenedorKnex {
     }
 }
 
-module.exports = contenedorKnex;
+export default contenedorKnex

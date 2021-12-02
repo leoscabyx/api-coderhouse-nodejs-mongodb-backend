@@ -1,30 +1,35 @@
-const { Router } = require('express');
+import { Router } from 'express'
+
+import { instanciasDaos } from '../daos/index.js'
 
 const router = Router();
-
-const Contenedor = require('../contenedores/contenedorCarrito')
-const contenedorCarrito = new Contenedor('./src/DB/carrito.txt')
-
+const DaoCarritos = instanciasDaos.DaoCarritos  
 
 router.get('/', async (req, res) => {
-    const carritos = await contenedorCarrito.getAll()
-    res.json({ msj: "hola desde carrito /", carritos })
-    console.log('Devolver algo de carritos')
+    const carritos = await DaoCarritos.getAll()
+
+    res.json({ msj: "Todos los productos", carritos })
+    // console.log('Get /api/carrito')
 })
 
 router.post('/',  async (req, res) => {
+    const { productos } = req.body
 
-    const carrito = await contenedorCarrito.save()
+    if(Array.isArray(productos) && productos.length === 0){
+        const carrito = await DaoCarritos.save({productos})
 
-    res.json({ msj: "Post para crear un carrito", carrito })
-    console.log('Post /api/carrito')
+        res.json({ msj: 'Se ha creado un nuevo carrito y se devuelve su ID', carrito })
+    }else{
+        res.json({ msj: 'Se debe enviar un objeto con la propiedad productos y array vacio' })
+    }
+    // console.log('Post /api/carrito')
 })
 
 router.delete('/:id', async (req, res) => {
 
     const id = parseInt(req.params.id)
     
-    const carritos = await contenedorCarrito.getAll()
+    const carritos = await DaoCarritos.getAll()
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
@@ -34,17 +39,17 @@ router.delete('/:id', async (req, res) => {
         return res.json({ error: 'El ID esta fuera del rango' })
     }
 
-    const carrito = await contenedorCarrito.deleteById(id)
+    const carrito = await DaoCarritos.deleteById(id)
 
-    res.json({ msj: "Delete vaciar el carrito eliminar los productos ", id, carrito })
-    console.log('Delete /api/carrito')
+    res.json({ msj: "Carrito Eliminado", carrito })
+    // console.log('Delete /api/carrito')
 })
 
 router.get('/:id/productos', async (req, res) => {
 
     const id = parseInt(req.params.id)
     
-    const carritos = await contenedorCarrito.getAll()
+    const carritos = await DaoCarritos.getAll()
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
@@ -54,16 +59,16 @@ router.get('/:id/productos', async (req, res) => {
         return res.json({ error: 'El ID esta fuera del rango' })
     }
 
-    const productosCarrito = await contenedorCarrito.getProductsById(id)
+    const productosCarrito = await DaoCarritos.getProductsById(id)
 
-    res.json({ msj: "Get traer los productos en el carrito ", id, productosCarrito })
-    console.log('Get /api/carrito/:id/productos')
+    res.json({ msj: "Productos por su ID de Carrito", data: {id: id, productos: productosCarrito} })
+    // console.log('Get /api/carrito/:id/productos')
 })
 
 router.post('/:id/productos', async (req, res) => {
     const id = parseInt(req.params.id)
     
-    const carritos = await contenedorCarrito.getAll()
+    const carritos = await DaoCarritos.getAll()
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
@@ -85,10 +90,10 @@ router.post('/:id/productos', async (req, res) => {
         stock
     }
 
-    const productosCarrito = await contenedorCarrito.saveProduct(id, producto)
+    const productosCarrito = await DaoCarritos.saveProduct(id, producto)
 
-    res.json({ msj: "Post para incorporar un producto en el carrito por su ID", id, productosCarrito })
-    console.log('Post /api/carrito/:id/productos')
+    res.json({ msj: "Se ha insertado un producto en el carrito por su ID", data: {id: id, productos: productosCarrito} })
+    // console.log('Post /api/carrito/:id/productos')
 })
 
 router.delete('/:id/productos/:id__prod', async (req, res) => {
@@ -96,7 +101,7 @@ router.delete('/:id/productos/:id__prod', async (req, res) => {
     const id = parseInt(req.params.id)
     const id__prod = parseInt(req.params.id__prod)
     
-    const carritos = await contenedorCarrito.getAll()
+    const carritos = await DaoCarritos.getAll()
 
     if (isNaN(id)) {
         return res.json({ error: 'El ID no es un numero' })
@@ -106,10 +111,15 @@ router.delete('/:id/productos/:id__prod', async (req, res) => {
         return res.json({ error: 'El ID esta fuera del rango' })
     }
 
-    const resultado = await contenedorCarrito.deleteProducto(id, id__prod)
+    const productoEliminado = await DaoCarritos.deleteProducto(id, id__prod)
 
-    res.json({ msj: "Delete para eliminar un producto en el carrito por su ID", idCarrito: id, msj: resultado })
-    console.log('Delete /api/carrito/:id/productos')
+    if(productoEliminado){
+        res.json({ msj: "Producto Eliminado en el carrito por su ID", producto: productoEliminado })
+    }else{
+        res.json({ msj: "No se ha podido Eliminar el producto del Carrito" })
+    }
+    // console.log('Delete /api/carrito/:id/productos')
 })
 
-module.exports = router;
+
+export default router
