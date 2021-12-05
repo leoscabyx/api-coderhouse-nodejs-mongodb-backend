@@ -1,6 +1,7 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IOServer } from 'socket.io'
+import faker from 'faker'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
@@ -24,6 +25,20 @@ app.use('/uploads', express.static('src/uploads'))
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
+
+app.get('/api/productos-test', (req, res) => {
+    const productos = []
+    for (let i = 0; i < 5; i++) {
+        const nuevoProducto = {
+            nombre: `${faker.name.firstName()}  ${faker.name.lastName()}`,
+            precio: parseInt(faker.commerce.price()),
+            foto: faker.image.avatar()
+        }
+        productos.push(nuevoProducto)
+    }
+
+    res.json({msj: 'Productos Test Mock con Faker.js', productos})
+})
 
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
