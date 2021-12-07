@@ -7,14 +7,31 @@
     <title>BackEnd 17035</title>
     <link rel="stylesheet" href="css/estilos.css">
     <script src="./socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 </head>
 <body>
     <main>
         <section>
             <h2>Centro de Mensajes</h2>
+            <h3 id="compresion"></h3>
             <form action="/" method="post" id="formulario2">
                 <div>
                     <input type="email" name="email" placeholder="Ingresar email..." required value="leo@gmail.com">
+                </div>
+                <div>
+                    <input type="text" name="nombre" placeholder="Ingresar nombre..." required value="Leo">
+                </div>
+                <div>
+                    <input type="text" name="apellido" placeholder="Ingresar apellido..." required value="LS">
+                </div>
+                <div>
+                    <input type="number" name="edad" placeholder="Ingresar edad..." required value="100">
+                </div>
+                <div>
+                    <input type="text" name="alias" placeholder="Ingresar alias..." required value="leoscabyx">
+                </div>
+                <div>
+                    <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://coder-conf.com/_nuxt/img/astronauta.84dff61.png">
                 </div>
                 <div>
                     <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
@@ -28,35 +45,77 @@
     <script>
         const socket = io()
         const form2 = document.querySelector('#formulario2')
+        const compresion = document.querySelector('#compresion')
         const divMsjs = document.querySelector('#msjs')
+        console.log(normalizr)
 
         form2.addEventListener('submit', (e) => {
             e.preventDefault()
             let email = e.target[0].value
-            let msj = e.target[1].value
+            let nombre = e.target[1].value
+            let apellido = e.target[2].value
+            let edad = parseInt(e.target[3].value)
+            let alias = e.target[4].value
+            let avatar = e.target[5].value
+            let msj = e.target[6].value
             let fecha = new Date()
-            const nuevoMsj = { email, msj, fecha }
+            const nuevoMsj = { 
+                author: {
+                    email,
+                    nombre,
+                    apellido,
+                    edad,
+                    alias,
+                    avatar
+                },
+                msj,
+                fecha
+            }
             // console.log(nuevoMsj)
             socket.emit('msj', nuevoMsj)
         })
 
         socket.on('msjs', (data) => {
-            console.log(data)
-            if(data.length > 0){
-                console.log(data)
+            // console.log(data)
+            const user = new normalizr.schema.Entity('users')
+
+            const mensaje = new normalizr.schema.Entity('mensajes', {
+                author: user
+            });
+
+            const chats = new normalizr.schema.Entity('chats', {
+                mensajes: [mensaje]
+            });
+            const denormalizedData = normalizr.denormalize(data.result, chats, data.entities)
+            const { mensajes } = denormalizedData
+            if(mensajes.length > 0){
+                console.log(mensajes)
                 let divHTML = ''
-                data.map( (msj) => {
+                mensajes.map( (msj) => {
                 divHTML += `
                     <div class="msj" >
-                        <span class="msj__email">${msj.email}</span>
+                        <span class="msj__email">${msj.author.email}</span>
                         <span class="msj__fecha">${msj.fecha}:</span>
                         <span class="msj__texto">${msj.msj}</span>
+                        <img class="msj__avatar" src="https://coder-conf.com/_nuxt/img/astronauta.84dff61.png" alt="Imagen Avatar"/>
                     </div>
                     `
                 })
                 divMsjs.innerHTML = divHTML
             }else{
                 divMsjs.innerHTML = 'No hay msjs'
+            }
+
+            console.log(JSON.stringify(data).length)
+            console.log(JSON.stringify(denormalizedData).length)
+            // console.log( (JSON.stringify(data).length / JSON.stringify(denormalizedData).length) * 100)
+            const disminucion = JSON.stringify(denormalizedData).length - JSON.stringify(data).length
+            const porcentaje = parseInt((disminucion / JSON.stringify(denormalizedData).length) * 100)
+            console.log(`Porcentaje de compresion: ${porcentaje}%`)
+            if(porcentaje < 0){
+                compresion.innerHTML = 'No tienes compresion aun xD llamativa'
+            }else{
+                compresion.innerHTML = 'Compresion: ' + porcentaje + '%'
             }
         })
     </script>
