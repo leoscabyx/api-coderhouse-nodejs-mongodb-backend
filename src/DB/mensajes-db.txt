@@ -1,0 +1,30 @@
+[
+  {
+    "author": {
+      "email": "leo@gmail.com",
+      "nombre": "Leo",
+      "apellido": "LS",
+      "edad": 100,
+      "alias": "leoscabyx",
+      "avatar": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png"
+    },
+    "msj": "algun texto",
+    "fecha": "2021-12-07T16:27:39.349Z",
+    "id": 1,
+    "timestamp": 1638894459357
+  },
+  {
+    "author": {
+      "email": "leo@gmail.com",
+      "nombre": "Leo",
+      "apellido": "LS",
+      "edad": 100,
+      "alias": "leoscabyx",
+      "avatar": "https://coder-conf.com/_nuxt/img/astronauta.84dff61.png"
+    },
+    "msj": "algun texto",
+    "fecha": "2021-12-07T16:35:02.401Z",
+    "id": 2,
+    "timestamp": 1638894902405
+  }
+]
