@@ -112,3 +112,22 @@ form button {
     right: 1rem;
     top: 1rem;
 }
+
+.alert {
+    background-color: lightgray;
+    color: navy;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert a {
+    background-color: yellow;
+    padding: 5px 1rem;
+    border-radius: 5px;
+    color: #000;
+    text-decoration: none;
+}

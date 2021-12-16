@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+    <%- include("./partials/head") %>
+<body>
+    <main>
+        <% if (!auth) { %>
+        <section>
+            <h2>Login Usuario</h2>
+            <form action="/login" method="post">
+                <div>
+                    <input type="text" name="nombre" placeholder="Ingresar nombre..." value="leonardo" required>
+                </div>
+                <button>Enviar</button>
+            </form>
+        </section>
+        <% }else{ %>
+        <section>
+            <div class="alert">
+                Bienvenido <%= nombre ? nombre : '' %>
+                <a href="/logout">Desloguearse</a>
+            </div>
+        </section>
+        <% } %>
+    </main>
+</body>
+</html>

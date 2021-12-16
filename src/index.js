@@ -3,10 +3,11 @@ import { Server as HttpServer } from 'http'
 import { Server as IOServer } from 'socket.io'
 import faker from 'faker'
 import { normalize, denormalize, schema } from 'normalizr'
+import session from 'express-session'
+import MongoStore from 'connect-mongo'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
-import ContenedorArchivo from './contenedores/ContenedorArchivo.js'
 import { instanciasDaos } from './daos/index.js'
 
 const DaoMensajes = instanciasDaos.DaoMensajes
@@ -15,14 +16,63 @@ const app = express()
 const httpServer = new HttpServer(app)
 const io = new IOServer(httpServer)
 
+app.set("view engine", "ejs")
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority',
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+        ttl: 600
+    }),
+    secret: 'secreto',
+    resave: false,
+    saveUninitialized: false,
+    // cookie: {
+    //     maxAge: 10000
+    // }
+}))
 
 app.use('/', express.static('public'))
 app.use('/uploads', express.static('src/uploads'))
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
+
+app.get('/login', (req, res) => {
+    if(req.session.nombre){
+        res.render('login', { page: 'Login', auth: true, nombre: req.session.nombre })
+    }else{
+        res.render('login', { page: 'Login', auth: false })
+    }
+})
+
+app.post('/login', (req, res) => {
+    const { nombre } = req.body
+  
+    if (nombre !== 'leonardo') {
+      return res.send('Login fallo')
+    }
+  
+    req.session.nombre = nombre
+    // req.session.admin = true
+    res.render('login', { page: 'Login', auth: true, nombre: req.session.nombre })
+})
+
+app.get('/logout', (req, res) => {
+    if(req.session.nombre){
+        const nombre = req.session.nombre
+        req.session.destroy(err => {
+          if (err) {
+            res.json({ status: 'Logout ERROR', body: err })
+          } else {
+            res.render('logout', { page: 'Logout', nombre: nombre })
+          }
+        })
+    }else{
+        res.redirect('/login')
+    }
+})
 
 app.get('/api/productos-test', (req, res) => {
     const productos = []
