@@ -52,7 +52,7 @@ form label {
     font-size: 20px;
 }
 
-form [type="text"], form [type="number"], form [type="email"] {
+form [type="text"], form [type="number"], form [type="email"], form [type="password"] {
     padding: 10px;
     border: 1px solid rgb(98,41,56);
 }
