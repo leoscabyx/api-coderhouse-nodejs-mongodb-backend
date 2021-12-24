@@ -7,7 +7,7 @@ class MensajesDaoMongoDB extends ContenedorMongoDB {
             id: { type: Number, required: true },
             timestamp: { type: Date, required: true },
             msj: { type: String, required: true },
-            author: { type: Mixed, required: true },
+            author: { type: Object, required: true },
             fecha: { type: String, required: true },
         })
     }
