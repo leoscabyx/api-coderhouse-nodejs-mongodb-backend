@@ -1,17 +1,10 @@
 import config from '../config.js'
 
-// import CarritosDaoArchivo from './carritos/CarritosDaoArchivo.js'
-// import CarritosDaoMongoDB from './carritos/CarritosDaoMongoDB.js'
-// import CarritosDaoFirebase from './carritos/CarritosDaoFirebase.js'
-
-// import ProductosDaoArchivo from './productos/ProductosDaoArchivo.js'
-// import ProductosDaoMongoDB from './productos/ProductosDaoMongoDB.js'
-// import ProductosDaoFirebase from './productos/ProductosDaoFirebase.js'
-
 let instanciasDaos
 let DaoCarritos
 let DaoProductos
 let DaoMensajes
+let DaoUsuarios
 
 
 switch (config.PERS) {
@@ -20,10 +13,12 @@ switch (config.PERS) {
         const { default: CarritosDaoMongoDB} = await import('./carritos/CarritosDaoMongoDB.js')
         const { default: ProductosDaoMongoDB} = await import('./productos/ProductosDaoMongoDB.js')
         const { default: MensajesDaoMongoDB} = await import('./mensajes/MensajesDaoMongoDB.js')
+        const { default: UsuariosDaoMongoDB} = await import('./usuarios/UsuariosDaoMongoDB.js')
         DaoCarritos = new CarritosDaoMongoDB()
         DaoProductos = new ProductosDaoMongoDB()
         DaoMensajes = new MensajesDaoMongoDB()
-        instanciasDaos = { DaoCarritos, DaoProductos, DaoMensajes }
+        DaoUsuarios = new UsuariosDaoMongoDB()
+        instanciasDaos = { DaoCarritos, DaoProductos, DaoMensajes, DaoUsuarios }
         break;
     case 'firebase':
         console.log('firebase')

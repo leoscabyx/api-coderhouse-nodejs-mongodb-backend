@@ -1,4 +1,4 @@
-const PERS = 'archivo'
+const PERS = 'mongodb'
 
 export default {
     PERS,
