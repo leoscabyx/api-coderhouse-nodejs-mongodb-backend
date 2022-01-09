@@ -8,15 +8,16 @@ import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import pkg from 'bcrypt'
-const bcrypt = pkg
 import yargs from 'yargs'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
+import routerRandom from './router/routerRandom.js'
 import { instanciasDaos } from './daos/index.js'
 
 const DaoMensajes = instanciasDaos.DaoMensajes
 const DaoUsuarios = instanciasDaos.DaoUsuarios
+const bcrypt = pkg
 
 /* Passport */
 
@@ -125,6 +126,7 @@ app.use('/uploads', express.static('src/uploads'))
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
+app.use('/api/randoms', routerRandom)
 
 app.get('/', (req, res) => {
     if(req.user){
