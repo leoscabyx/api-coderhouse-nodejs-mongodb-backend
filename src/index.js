@@ -195,6 +195,18 @@ app.get('/api/productos-test', (req, res) => {
     res.json({msj: 'Productos Test Mock con Faker.js', productos})
 })
 
+app.get('/info', (req, res) => {
+    const processDetail = {
+        argumentos: process.argv.slice(2),
+        plataforma: process.platform,
+        versionNode: process.version,
+        memoriaTotal: process.memoryUsage().rss,
+        carpetaProyecto: process.cwd(),
+        pathEjecucion: process.execPath
+    }
+    res.json(processDetail)
+})
+
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
     res.json({ error : -2, descripcion: `ruta '${req.url}' método ${req.method} no implementada`})
