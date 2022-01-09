@@ -9,6 +9,7 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import pkg from 'bcrypt'
 const bcrypt = pkg
+import yargs from 'yargs'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
@@ -240,8 +241,17 @@ io.on('connection', async (socket) => {
     socket.emit('msjs', normalizedData) 
 })
 
-const PORT = process.env.PORT || 8080
+const { puerto } = yargs(process.argv.slice(2))
+    .alias({
+        p: 'puerto'
+    })
+    .default({
+        puerto: 8080
+    })
+    .argv
 
+const PORT = puerto
+    
 const server = httpServer.listen(PORT, () => {
     console.log(`Ya me conecte al puerto ${server.address().port} !!`)
 })
