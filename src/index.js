@@ -8,14 +8,16 @@ import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import pkg from 'bcrypt'
-const bcrypt = pkg
+import yargs from 'yargs'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
+import routerRandom from './router/routerRandom.js'
 import { instanciasDaos } from './daos/index.js'
 
 const DaoMensajes = instanciasDaos.DaoMensajes
 const DaoUsuarios = instanciasDaos.DaoUsuarios
+const bcrypt = pkg
 
 /* Passport */
 
@@ -124,6 +126,7 @@ app.use('/uploads', express.static('src/uploads'))
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
+app.use('/api/randoms', routerRandom)
 
 app.get('/', (req, res) => {
     if(req.user){
@@ -194,6 +197,18 @@ app.get('/api/productos-test', (req, res) => {
     res.json({msj: 'Productos Test Mock con Faker.js', productos})
 })
 
+app.get('/info', (req, res) => {
+    const processDetail = {
+        argumentos: process.argv.slice(2),
+        plataforma: process.platform,
+        versionNode: process.version,
+        memoriaTotal: process.memoryUsage().rss,
+        carpetaProyecto: process.cwd(),
+        pathEjecucion: process.execPath
+    }
+    res.json(processDetail)
+})
+
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
     res.json({ error : -2, descripcion: `ruta '${req.url}' método ${req.method} no implementada`})
@@ -240,8 +255,17 @@ io.on('connection', async (socket) => {
     socket.emit('msjs', normalizedData) 
 })
 
-const PORT = process.env.PORT || 8080
+const { puerto } = yargs(process.argv.slice(2))
+    .alias({
+        p: 'puerto'
+    })
+    .default({
+        puerto: 8080
+    })
+    .argv
 
+const PORT = puerto
+    
 const server = httpServer.listen(PORT, () => {
     console.log(`Ya me conecte al puerto ${server.address().port} !!`)
 })
