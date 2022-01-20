@@ -9,6 +9,8 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import pkg from 'bcrypt'
 import yargs from 'yargs'
+import cluster from 'cluster'
+import os from 'os'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
@@ -18,6 +20,7 @@ import { instanciasDaos } from './daos/index.js'
 const DaoMensajes = instanciasDaos.DaoMensajes
 const DaoUsuarios = instanciasDaos.DaoUsuarios
 const bcrypt = pkg
+const numCPUs = os.cpus().length
 
 /* Passport */
 
@@ -204,7 +207,9 @@ app.get('/info', (req, res) => {
         versionNode: process.version,
         memoriaTotal: process.memoryUsage().rss,
         carpetaProyecto: process.cwd(),
-        pathEjecucion: process.execPath
+        pathEjecucion: process.execPath,
+        cpus: numCPUs,
+        pid: process.pid
     }
     res.json(processDetail)
 })
@@ -255,22 +260,57 @@ io.on('connection', async (socket) => {
     socket.emit('msjs', normalizedData) 
 })
 
-const { puerto } = yargs(process.argv.slice(2))
+const { puerto, modo } = yargs(process.argv.slice(2))
     .alias({
-        p: 'puerto'
+        p: 'puerto',
+        m: 'modo'
     })
     .default({
-        puerto: 8080
+        puerto: 8080,
+        modo: 'fork'
     })
     .argv
 
-const PORT = puerto
+if(modo === 'cluster'){
     
-const server = httpServer.listen(PORT, () => {
-    console.log(`Ya me conecte al puerto ${server.address().port} !!`)
-})
+    if (cluster.isPrimary) {
+        console.log(modo)
+        console.log(numCPUs)
+        console.log(`PID MASTER ${process.pid}`)
 
-server.on('error', (error) =>{
-    console.log('hubo un error....')
-    console.log(error)
-})
+        for (let i = 0; i < numCPUs; i++) {
+            cluster.fork()
+        }
+    
+        cluster.on('exit', worker => {
+            console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
+            cluster.fork()
+        })
+    }else{
+        const PORT = puerto
+    
+        const server = httpServer.listen(PORT, () => {
+            console.log(`Ya me conecte al puerto ${server.address().port} !!`)
+        })
+
+        server.on('error', (error) =>{
+            console.log('hubo un error....')
+            console.log(error)
+        })
+    }
+}else{
+    console.log(modo)
+    console.log(numCPUs)
+
+    const PORT = puerto
+    
+    const server = httpServer.listen(PORT, () => {
+        console.log(`Ya me conecte al puerto ${server.address().port} !!`)
+    })
+
+    server.on('error', (error) =>{
+        console.log('hubo un error....')
+        console.log(error)
+    })
+}
+
