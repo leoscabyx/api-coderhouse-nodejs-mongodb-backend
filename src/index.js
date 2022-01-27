@@ -11,6 +11,7 @@ import pkg from 'bcrypt'
 import yargs from 'yargs'
 import cluster from 'cluster'
 import os from 'os'
+import compression from 'compression'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
@@ -200,7 +201,7 @@ app.get('/api/productos-test', (req, res) => {
     res.json({msj: 'Productos Test Mock con Faker.js', productos})
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', compression(), (req, res) => {
     const processDetail = {
         argumentos: process.argv.slice(2),
         plataforma: process.platform,
