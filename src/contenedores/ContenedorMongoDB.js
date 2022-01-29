@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 // await mongoose.connect('mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority');
 await mongoose.connect(config.mongodb.cnxStr);
     
-console.log('Base MongoDB conectada')
+// console.log('Base MongoDB conectada')
 
 class ContenedorMongoDB {
     constructor(nombreColeccion, esquema) {
