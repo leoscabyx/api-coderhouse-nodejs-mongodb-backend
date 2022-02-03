@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node benchmark.js",
+    "test": "node ./src/benchmark.js",
     "dev": "nodemon ./src/index.js",
-    "start": "0x ./src/index.js",
+    "start": "node ./src/index.js",
     "profiler": "node --prof ./src/index.js",
     "inspect": "node --inspect ./src/index.js",
     "0x": "0x ./src/index.js"
