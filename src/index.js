@@ -274,7 +274,7 @@ const { puerto, modo } = yargs(process.argv.slice(2))
         m: 'modo'
     })
     .default({
-        puerto: 8080,
+        puerto: process.env.PORT || 8080,
         modo: 'fork'
     })
     .argv
