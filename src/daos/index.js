@@ -1,4 +1,5 @@
 import config from '../config.js'
+import logger from '../logger.js'
 
 let instanciasDaos
 let DaoCarritos
@@ -9,7 +10,7 @@ let DaoUsuarios
 
 switch (config.PERS) {
     case 'mongodb':
-        console.log('mongodb')
+        logger.info('DB: mongodb')
         const { default: CarritosDaoMongoDB} = await import('./carritos/CarritosDaoMongoDB.js')
         const { default: ProductosDaoMongoDB} = await import('./productos/ProductosDaoMongoDB.js')
         const { default: MensajesDaoMongoDB} = await import('./mensajes/MensajesDaoMongoDB.js')
@@ -21,7 +22,7 @@ switch (config.PERS) {
         instanciasDaos = { DaoCarritos, DaoProductos, DaoMensajes, DaoUsuarios }
         break;
     case 'firebase':
-        console.log('firebase')
+        logger.info('DB: firebase')
         const { default: CarritosDaoFirebase} = await import('./carritos/CarritosDaoFirebase.js')
         const { default: ProductosDaoFirebase} = await import('./productos/ProductosDaoFirebase.js')
         const { default: MensajesDaoFirebase} = await import('./mensajes/MensajesDaoFirebase.js')
@@ -31,7 +32,7 @@ switch (config.PERS) {
         instanciasDaos = { DaoCarritos, DaoProductos, DaoMensajes }
         break;
     default:
-        console.log('archivo')
+        logger.info('DB: archivo')
         const { default: CarritosDaoArchivo} = await import('./carritos/CarritosDaoArchivo.js')
         const { default: ProductosDaoArchivo} = await import('./productos/ProductosDaoArchivo.js')
         const { default: MensajesDaoArchivo} = await import('./mensajes/MensajesDaoArchivo.js')

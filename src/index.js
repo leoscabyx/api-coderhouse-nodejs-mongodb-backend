@@ -11,11 +11,13 @@ import pkg from 'bcrypt'
 import yargs from 'yargs'
 import cluster from 'cluster'
 import os from 'os'
+import compression from 'compression'
 
 import routerProductos from './router/routerProductos.js'
 import routerCarrito from './router/routerCarrito.js'
 import routerRandom from './router/routerRandom.js'
 import { instanciasDaos } from './daos/index.js'
+import logger from './logger.js'
 
 const DaoMensajes = instanciasDaos.DaoMensajes
 const DaoUsuarios = instanciasDaos.DaoUsuarios
@@ -126,6 +128,10 @@ app.use(passport.session());
 
 app.use('/', express.static('public'))
 app.use('/uploads', express.static('src/uploads'))
+app.use((req, res, next) => {
+    logger.info(`Ruta: '${req.url}' Método: ${req.method}`)
+    next()
+})
 
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
@@ -200,7 +206,7 @@ app.get('/api/productos-test', (req, res) => {
     res.json({msj: 'Productos Test Mock con Faker.js', productos})
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', compression(), (req, res) => {
     const processDetail = {
         argumentos: process.argv.slice(2),
         plataforma: process.platform,
@@ -211,21 +217,23 @@ app.get('/info', (req, res) => {
         cpus: numCPUs,
         pid: process.pid
     }
+    console.log(processDetail)
     res.json(processDetail)
 })
 
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
+    logger.warn(`ruta '${req.url}' método ${req.method} no implementada`)
     res.json({ error : -2, descripcion: `ruta '${req.url}' método ${req.method} no implementada`})
 })
 
 io.on('connection', async (socket) => { 
     //"connection" se ejecuta la primera vez que se abre una nueva conexión
-    console.log('Usuario conectado') // Se imprimirá solo la primera vez que se ha abierto la conexión
+    logger.info('Websocket: Usuario conectado') // Se imprimirá solo la primera vez que se ha abierto la conexión
     // ContenedorMsjs.createtable()
     const msjs = await DaoMensajes.getAll()
 
-    const user = new schema.Entity('users', {}, {idAttribute: 'email'})
+    const user = new schema.Entity('users', {}, { idAttribute: 'email' })
 
     const mensaje = new schema.Entity('mensajes', {
         author: user
@@ -253,7 +261,7 @@ io.on('connection', async (socket) => {
 
             io.sockets.emit('msjs', normalizedData)
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     })
 
@@ -274,43 +282,41 @@ const { puerto, modo } = yargs(process.argv.slice(2))
 if(modo === 'cluster'){
     
     if (cluster.isPrimary) {
-        console.log(modo)
-        console.log(numCPUs)
-        console.log(`PID MASTER ${process.pid}`)
+        logger.info(`Modo: ${modo}`)
+        logger.info(`Numero CPU's: ${numCPUs}`)
+        logger.info(`PID MASTER ${process.pid}`)
 
         for (let i = 0; i < numCPUs; i++) {
             cluster.fork()
         }
     
         cluster.on('exit', worker => {
-            console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
+            logger.info('Worker', worker.process.pid, 'died', new Date().toLocaleString())
             cluster.fork()
         })
     }else{
         const PORT = puerto
     
         const server = httpServer.listen(PORT, () => {
-            console.log(`Ya me conecte al puerto ${server.address().port} !!`)
+            logger.info(`Servidor: Conectado al puerto ${server.address().port} !!`)
         })
 
         server.on('error', (error) =>{
-            console.log('hubo un error....')
-            console.log(error)
+            logger.error(error)
         })
     }
 }else{
-    console.log(modo)
-    console.log(numCPUs)
+    logger.info(`Modo: ${modo}`)
+    logger.info(`Numero CPU's: ${numCPUs}`)
 
     const PORT = puerto
     
     const server = httpServer.listen(PORT, () => {
-        console.log(`Ya me conecte al puerto ${server.address().port} !!`)
+        logger.info(`Servidor: Conectado al puerto ${server.address().port} !!`)
     })
 
     server.on('error', (error) =>{
-        console.log('hubo un error....')
-        console.log(error)
+        logger.error(error)
     })
 }
 
