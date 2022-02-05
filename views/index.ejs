@@ -37,7 +37,7 @@
                     <input type="text" name="alias" placeholder="Ingresar alias..." required value="leoscabyx">
                 </div>
                 <div>
-                    <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://coder-conf.com/_nuxt/img/astronauta.84dff61.png">
+                    <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://randomuser.me/api/portraits/lego/6.jpg">
                 </div>
                 <div>
                     <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
@@ -97,13 +97,13 @@
             if(mensajes.length > 0){
                 console.log(mensajes)
                 let divHTML = ''
-                mensajes.map( (msj) => {
+                mensajes.map( ( { _doc } ) => {
                 divHTML += `
                     <div class="msj" >
-                        <span class="msj__email">${msj.author.email}</span>
-                        <span class="msj__fecha">${msj.fecha}:</span>
-                        <span class="msj__texto">${msj.msj}</span>
-                        <img class="msj__avatar" src="https://coder-conf.com/_nuxt/img/astronauta.84dff61.png" alt="Imagen Avatar"/>
+                        <span class="msj__email">${_doc.author.email}</span>
+                        <span class="msj__fecha">${_doc.fecha}:</span>
+                        <span class="msj__texto">${_doc.msj}</span>
+                        <img class="msj__avatar" src="${_doc.author.avatar}" alt="Imagen Avatar"/>
                     </div>
                     `
                 })
