@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
 import config from '../config.js'
+import sendMail from '../nodemailer/index.js'
 
 const { Schema } = mongoose;
 
@@ -28,6 +29,18 @@ class ContenedorMongoDB {
             nuevoElemento.timestamp = Date.now()
 
             await this.coleccion.create(nuevoElemento)
+
+            await sendMail({
+                to: config.MAIL_ADMIN,
+                subject: 'Nuevo Registro Usuario (APP)',
+                html: `Datos:
+                        Nombre: ${nuevoElemento.nombre}
+                        Direccion: ${nuevoElemento.direccion}
+                        Edad: ${nuevoElemento.edad}
+                        Telefono: ${nuevoElemento.telefono}
+                        Avatar: ${nuevoElemento.avatar}
+                        `
+            })
 
             return nuevoElemento.id
         } catch (error) {
