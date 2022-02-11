@@ -43,7 +43,12 @@ passport.use(
       
             const newUser = {
                 username: username,
-                password: createHash(password)
+                password: createHash(password),
+                nombre: req.body.nombre,
+                direccion: req.body.direccion,
+                edad: req.body.edad,
+                telefono: req.body.telefono,
+                avatar: req.body.avatar
             }
       
             const userId = await DaoUsuarios.save(newUser)
