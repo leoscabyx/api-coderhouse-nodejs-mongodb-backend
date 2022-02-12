@@ -35,19 +35,19 @@ class contenedorKnex {
                         t.text('msj');
                     })
                 }
-                console.log('Tabla creada', this.table)
+                logger.info('Tabla creada', this.table)
                 // sql.destroy()
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
     /* Recibe un objeto, lo guarda en el archivo, devuelve el id asignado */
     async save(objetoNuevo) {
-        if (typeof objetoNuevo !== 'object') return console.log('El valor esperado es un objeto')
-        if (Array.isArray(objetoNuevo)) return console.log('El valor esperado es un objeto clave/valor no un array')
-        if (Object.keys(objetoNuevo).length === 0) return console.log('El objeto esta vacio')
+        if (typeof objetoNuevo !== 'object') return logger.warn('El valor esperado es un objeto')
+        if (Array.isArray(objetoNuevo)) return logger.warn('El valor esperado es un objeto clave/valor no un array')
+        if (Object.keys(objetoNuevo).length === 0) return logger.warn('El objeto esta vacio')
 
         await this.createtable()
 
@@ -63,7 +63,7 @@ class contenedorKnex {
                 return id
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -74,14 +74,14 @@ class contenedorKnex {
             const table = this.table
 
             const result = await sql(table).where({ id: id })
-            // console.log(result)
+
             if(result && result.length > 0) {
                 return result
             }else{
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -102,7 +102,7 @@ class contenedorKnex {
             }
                 
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -114,14 +114,14 @@ class contenedorKnex {
 
             const [elementoEliminado] = await sql(table).where({ id: id })
             const result = await sql(table).where({ id: id }).del()
-            console.log(result, elementoEliminado)
+
             if(result) {
                 return elementoEliminado
             }else{
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -140,7 +140,7 @@ class contenedorKnex {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     const carritos = await DaoCarritos.getAll()
 
     res.json({ msj: "Todos los productos", carritos })
-    // console.log('Get /api/carrito')
+
 })
 
 router.post('/',  async (req, res) => {
@@ -22,7 +22,6 @@ router.post('/',  async (req, res) => {
     }else{
         res.json({ msj: 'Se debe enviar un objeto con la propiedad productos y array vacio' })
     }
-    // console.log('Post /api/carrito')
 })
 
 router.delete('/:id', async (req, res) => {
@@ -42,7 +41,6 @@ router.delete('/:id', async (req, res) => {
     const carrito = await DaoCarritos.deleteById(id)
 
     res.json({ msj: "Carrito Eliminado", carrito })
-    // console.log('Delete /api/carrito')
 })
 
 router.get('/:id/productos', async (req, res) => {
@@ -62,7 +60,6 @@ router.get('/:id/productos', async (req, res) => {
     const productosCarrito = await DaoCarritos.getProductsById(id)
 
     res.json({ msj: "Productos por su ID de Carrito", data: {id: id, productos: productosCarrito} })
-    // console.log('Get /api/carrito/:id/productos')
 })
 
 router.post('/:id/productos', async (req, res) => {
@@ -93,7 +90,6 @@ router.post('/:id/productos', async (req, res) => {
     const productosCarrito = await DaoCarritos.saveProduct(id, producto)
 
     res.json({ msj: "Se ha insertado un producto en el carrito por su ID", data: {id: id, productos: productosCarrito} })
-    // console.log('Post /api/carrito/:id/productos')
 })
 
 router.delete('/:id/productos/:id__prod', async (req, res) => {
@@ -118,7 +114,6 @@ router.delete('/:id/productos/:id__prod', async (req, res) => {
     }else{
         res.json({ msj: "No se ha podido Eliminar el producto del Carrito" })
     }
-    // console.log('Delete /api/carrito/:id/productos')
 })
 
 

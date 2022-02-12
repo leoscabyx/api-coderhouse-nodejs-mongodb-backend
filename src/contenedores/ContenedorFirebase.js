@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-console.log('Base Firebase conectada!')
+logger.info('Base Firebase conectada!')
 
 const db = admin.firestore();
 
@@ -45,7 +45,7 @@ class ContenedorFirebase {
     
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -64,7 +64,7 @@ class ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
 
     }
@@ -81,7 +81,7 @@ class ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
         
     }
@@ -99,7 +99,7 @@ class ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 

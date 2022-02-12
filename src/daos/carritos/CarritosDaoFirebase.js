@@ -17,7 +17,7 @@ class CarritosDaoFirebase extends ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -43,7 +43,7 @@ class CarritosDaoFirebase extends ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -71,7 +71,7 @@ class CarritosDaoFirebase extends ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

@@ -21,6 +21,8 @@ import logger from './logger.js'
 
 const DaoMensajes = instanciasDaos.DaoMensajes
 const DaoUsuarios = instanciasDaos.DaoUsuarios
+const DaoProductos = instanciasDaos.DaoProductos
+const DaoCarritos = instanciasDaos.DaoCarritos
 const bcrypt = pkg
 const numCPUs = os.cpus().length
 
@@ -37,13 +39,14 @@ passport.use(
             const user = await DaoUsuarios.getByUser(username)
       
             if (user) {
-                console.log('Usuario ya existe')
+                logger.info('Usuario ya existe')
                 return done(null, false)
             }
       
             const newUser = {
                 username: username,
                 password: createHash(password),
+                email: req.body.email,
                 nombre: req.body.nombre,
                 direccion: req.body.direccion,
                 edad: req.body.edad,
@@ -55,10 +58,11 @@ passport.use(
             const userWithId = await DaoUsuarios.getById(userId)
     
             if(userWithId){
+                await DaoUsuarios.newUserSendMail(newUser)
                 return done(null, userWithId)
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
             return done(error)
         }
 
@@ -73,12 +77,12 @@ passport.use(
             const user = await DaoUsuarios.getByUser(username)
           
             if (!user) {
-              console.log('Usuario no encontrado: ' + username)
+                logger.warn('Usuario no encontrado: ' + username)
               return done(null, false)
             }
       
             if (!isValidPassword(user, password)) {
-              console.log('Invalid Password')
+                logger.warn('Invalid Password')
               return done(null, false)
             }
       
@@ -119,7 +123,7 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: 'mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority',
         mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-        ttl: 100
+        ttl: 24 * 60 * 60
     }),
     secret: 'secreto',
     resave: false,
@@ -142,12 +146,72 @@ app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarrito)
 app.use('/api/randoms', routerRandom)
 
-app.get('/', (req, res) => {
+function isAuth(req, res, next) {
+    if(!req.user){
+        res.redirect('/login')
+    }else{
+        next()
+    }
+}
+
+app.get('/', isAuth, (req, res) => {
     if(req.user){
         res.render('index', { page: 'Inicio', auth: true, nombre: req.user.username }) 
     }else{
         res.render('index', { page: 'Inicio', auth: false })
     }
+})
+
+app.get('/productos', isAuth, async (req, res) => {
+    const productos = await DaoProductos.getAll()
+    res.render('products', { page: 'Productos', productos })
+})
+
+app.post('/carrito', isAuth, async (req, res) => {
+    const carritoUser = await DaoCarritos.getCarritoUser(req.user.id)
+    const { id, title, description, code, price, thumbnail, stock } = await DaoProductos.getById(req.body.idProducto)
+    const producto = {
+        id,
+        timestamp: Date.now(), 
+        title,
+        description,
+        code,
+        price, 
+        thumbnail,
+        stock
+    }
+    
+    if(!carritoUser){
+        const idCarritoUser = await DaoCarritos.save({ productos: [], idUser: req.user.id })
+        await DaoCarritos.saveProduct(idCarritoUser, producto)
+    }else{
+        await DaoCarritos.saveProduct(carritoUser.id, producto)
+    }
+
+    res.redirect('/productos')
+})
+
+app.get('/carrito', isAuth, async (req, res) => {
+    const carritoUser = await DaoCarritos.getCarritoUser(req.user.id)
+    let productos = []
+    if(carritoUser){
+        productos = [...carritoUser.productos]
+    }
+
+    res.render('cart', { page: 'Carrito', productos })
+})
+
+app.get('/checkout', isAuth, async (req, res) => {
+    const dataUser = await DaoUsuarios.getById(req.user.id)
+    const carritoUser = await DaoCarritos.getCarritoUser(req.user.id)
+    await DaoCarritos.notificarCarrito(carritoUser, dataUser)
+    await DaoCarritos.deleteById(carritoUser.id)
+    res.render('checkout', { page: 'Checkout', username: req.user.username })
+})
+
+app.get('/perfil', isAuth, async (req, res) => {
+    const dataUser = await DaoUsuarios.getById(req.user.id)
+    res.render('profile', { page: 'Perfil', perfil: dataUser })
 })
 
 app.get('/register', (req, res) => {
@@ -222,7 +286,6 @@ app.get('/info', compression(), (req, res) => {
         cpus: numCPUs,
         pid: process.pid
     }
-    console.log(processDetail)
     res.json(processDetail)
 })
 

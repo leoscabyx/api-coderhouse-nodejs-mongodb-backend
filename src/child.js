@@ -1,5 +1,4 @@
 process.on('message', (cant) => {
-    // console.log(typeof cant)
     const numAleatorios = {}
     for (let i = 0; i < cant; i++) {
         const numAleatorio = Math.ceil(Math.random() * 1000)

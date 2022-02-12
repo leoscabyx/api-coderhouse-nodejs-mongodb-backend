@@ -1,14 +1,12 @@
 import mongoose from 'mongoose'
 
 import config from '../config.js'
-import sendMail from '../nodemailer/index.js'
 
 const { Schema } = mongoose;
 
 // await mongoose.connect('mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority');
 await mongoose.connect(config.mongodb.cnxStr);
-    
-// console.log('Base MongoDB conectada')
+
 
 class ContenedorMongoDB {
     constructor(nombreColeccion, esquema) {
@@ -30,21 +28,9 @@ class ContenedorMongoDB {
 
             await this.coleccion.create(nuevoElemento)
 
-            await sendMail({
-                to: config.MAIL_ADMIN,
-                subject: 'Nuevo Registro Usuario (APP)',
-                html: `Datos:
-                        Nombre: ${nuevoElemento.nombre}
-                        Direccion: ${nuevoElemento.direccion}
-                        Edad: ${nuevoElemento.edad}
-                        Telefono: ${nuevoElemento.telefono}
-                        Avatar: ${nuevoElemento.avatar}
-                        `
-            })
-
             return nuevoElemento.id
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -54,7 +40,7 @@ class ContenedorMongoDB {
             const data = await this.getAll()
             if(data && data.length > 0) {
                 const dataEncontrado = await this.coleccion.findOne({id: id})
-                // console.log(dataEncontrado)
+
                 if (dataEncontrado) {
                     return dataEncontrado
                 }else{
@@ -64,7 +50,7 @@ class ContenedorMongoDB {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -79,7 +65,7 @@ class ContenedorMongoDB {
                 return data
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -103,7 +89,7 @@ class ContenedorMongoDB {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -119,7 +105,7 @@ class ContenedorMongoDB {
             }
 
         }catch(error){
-            console.log(error)
+            logger.error(error)
         }
     }
 }
