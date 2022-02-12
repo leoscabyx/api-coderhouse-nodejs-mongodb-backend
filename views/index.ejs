@@ -10,50 +10,56 @@
     <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js"></script>
 </head>
 <body>
+    <%- include("./partials/header") %>
     <main>
-        <section>
+        <section class="seccion-info">
             <% if (auth) { %>
                 <div class="alert">
                     Bienvenido <%= nombre ? nombre : '' %>
                     <a href="/logout">Desloguearse</a>
                 </div>
             <% } %>
-            <h2>Centro de Mensajes</h2>
-            <h3 id="compresion"></h3>
-            <form action="/" method="post" id="formulario2">
-                <div>
-                    <input type="email" name="email" placeholder="Ingresar email..." required value="leo@gmail.com">
-                </div>
-                <div>
-                    <input type="text" name="nombre" placeholder="Ingresar nombre..." required value="Leo">
-                </div>
-                <div>
-                    <input type="text" name="apellido" placeholder="Ingresar apellido..." required value="LS">
-                </div>
-                <div>
-                    <input type="number" name="edad" placeholder="Ingresar edad..." required value="100">
-                </div>
-                <div>
-                    <input type="text" name="alias" placeholder="Ingresar alias..." required value="leoscabyx">
-                </div>
-                <div>
-                    <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://randomuser.me/api/portraits/lego/6.jpg">
-                </div>
-                <div>
-                    <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
-                </div>
-                <button>Enviar</button>
-            </form>
-            <div id="msjs"></div>
+        </section>
+        <section class="section-chat">
+            <div>
+                <h2>Centro de Mensajes</h2>
+                <h3 id="compresion"></h3>
+                <form action="/" method="post" id="formulario">
+                    <div>
+                        <input type="email" name="email" placeholder="Ingresar email..." required value="leo@gmail.com">
+                    </div>
+                    <div>
+                        <input type="text" name="nombre" placeholder="Ingresar nombre..." required value="Leo">
+                    </div>
+                    <div>
+                        <input type="text" name="apellido" placeholder="Ingresar apellido..." required value="LS">
+                    </div>
+                    <div>
+                        <input type="number" name="edad" placeholder="Ingresar edad..." required value="100">
+                    </div>
+                    <div>
+                        <input type="text" name="alias" placeholder="Ingresar alias..." required value="leoscabyx">
+                    </div>
+                    <div>
+                        <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://randomuser.me/api/portraits/lego/6.jpg">
+                    </div>
+                    <div>
+                        <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
+                    </div>
+                    <button>Enviar</button>
+                </form>
+            </div>
+            <div>
+                <div id="msjs"></div>
+            </div>
         </section>
     </main>
 
     <script>
         const socket = io()
-        const form2 = document.querySelector('#formulario2')
+        const form2 = document.querySelector('#formulario')
         const compresion = document.querySelector('#compresion')
         const divMsjs = document.querySelector('#msjs')
-        console.log(normalizr)
 
         form2.addEventListener('submit', (e) => {
             e.preventDefault()
@@ -77,12 +83,12 @@
                 msj,
                 fecha
             }
-            // console.log(nuevoMsj)
+
             socket.emit('msj', nuevoMsj)
         })
 
         socket.on('msjs', (data) => {
-            // console.log(data)
+
             const user = new normalizr.schema.Entity('users')
 
             const mensaje = new normalizr.schema.Entity('mensajes', {
@@ -95,7 +101,7 @@
             const denormalizedData = normalizr.denormalize(data.result, chats, data.entities)
             const { mensajes } = denormalizedData
             if(mensajes.length > 0){
-                console.log(mensajes)
+
                 let divHTML = ''
                 mensajes.map( ( { _doc } ) => {
                 divHTML += `
@@ -112,12 +118,9 @@
                 divMsjs.innerHTML = 'No hay msjs'
             }
 
-            console.log(JSON.stringify(data).length)
-            console.log(JSON.stringify(denormalizedData).length)
-            // console.log( (JSON.stringify(data).length / JSON.stringify(denormalizedData).length) * 100)
             const disminucion = JSON.stringify(denormalizedData).length - JSON.stringify(data).length
             const porcentaje = parseInt((disminucion / JSON.stringify(denormalizedData).length) * 100)
-            console.log(`Porcentaje de compresion: ${porcentaje}%`)
+
             if(porcentaje < 0){
                 compresion.innerHTML = 'No tienes compresion aun xD llamativa'
             }else{

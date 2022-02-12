@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+    <%- include("./partials/head") %>
+<body>
+    <%- include("./partials/header") %>
+    <main>
+        <section class="section-carrito">
+            <h2>Vista Carrito</h2>
+            <% if (productos.length > 0) { %>
+            <div>
+                    <% productos.map(item => { %>
+                        <div class="card-producto">
+                            <div class="card-producto__header">
+                                <img src="https://randomuser.me/api/portraits/lego/1.jpg" alt="" width="50" height="50">
+                                <h3><%= item.title %></h3>           
+                            </div>
+                            
+                            <div class="card-producto__body">
+                                <p>Precio: <%= item.price %></p>
+                                <p>Cantidad: <%= item.cantidad %></p>
+                            </div>
+                            
+                        </div>
+                    <% }) %>  
+            </div>
+            <div>
+                <form action="/checkout">
+                    <button>Finalizar Compra</button>
+                </form>
+            </div>
+            <% }else{ %>
+                <div class="alert">No tienes productos en el carrito</div>
+            <% } %> 
+        </section>
+    </main>
+</body>
+</html>

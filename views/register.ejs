@@ -2,20 +2,25 @@
 <html lang="es">
 <%- include("./partials/head") %>
 
-    <body>
-        <main>
-            <section>
+<body>
+    <main>
+        <section class="section-register">
+            <div>
                 <div class="alert">
                     <a href="/login">Iniciar Sesión</a>
                 </div>
                 <h2>Registro Usuario</h2>
-                <form action="/register" method="post">
+                <form action="/register" method="post" id="formulario">
                     <div>
                         <input type="text" name="username" placeholder="Ingresar Username..." value="coderhouse"
                             required>
                     </div>
                     <div>
                         <input type="password" name="password" placeholder="Ingresar Password..." value="12345678"
+                            required>
+                    </div>
+                    <div>
+                        <input type="email" name="email" placeholder="Ingresar Email..." value="algun@gmail.com"
                             required>
                     </div>
                     <div>
@@ -32,12 +37,13 @@
                     </div>
                     <div>
                         <input type="text" name="avatar" placeholder="Ingresar avatar" required
-                            value="https://randomuser.me/api/portraits/lego/6.jpg">
+                            value="https://randomuser.me/api/portraits/lego/3.jpg">
                     </div>
                     <button>Enviar</button>
                 </form>
-            </section>
-        </main>
-    </body>
+            </div>
+        </section>
+    </main>
+</body>
 
 </html>

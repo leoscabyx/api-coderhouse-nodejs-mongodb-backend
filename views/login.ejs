@@ -3,20 +3,22 @@
     <%- include("./partials/head") %>
 <body>
     <main>
-        <section>
-            <div class="alert">
-                <a href="/register">Registrarse</a>
+        <section class="section-login">
+            <div>
+                <div class="alert">
+                    <a href="/register">Registrarse</a>
+                </div>
+                <h2>Login Usuario</h2>
+                <form action="/login" method="post" id="formulario">
+                    <div>
+                        <input type="text" name="username" placeholder="Ingresar Username..." value="coderhouse" required>
+                    </div>
+                    <div>
+                        <input type="password" name="password" placeholder="Ingresar Password..." value="12345678" required>
+                    </div>
+                    <button>Enviar</button>
+                </form>
             </div>
-            <h2>Login Usuario</h2>
-            <form action="/login" method="post">
-                <div>
-                    <input type="text" name="username" placeholder="Ingresar Username..." value="coderhouse" required>
-                </div>
-                <div>
-                    <input type="password" name="password" placeholder="Ingresar Password..." value="12345678" required>
-                </div>
-                <button>Enviar</button>
-            </form>
         </section>
     </main>
 </body>
