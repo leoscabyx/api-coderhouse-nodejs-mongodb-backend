@@ -23,7 +23,7 @@ class ProductosDaoFirebase extends ContenedorFirebase {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

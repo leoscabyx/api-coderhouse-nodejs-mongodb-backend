@@ -23,7 +23,6 @@ const administrador = true
 router.get('/', async (req, res) => {
     const productos = await DaoProductos.getAll()
     res.json({msj: 'Todos los productos', productos})
-    // console.log('Get /api/productos')
 })
 
 router.get('/:id', async (req, res) => {
@@ -42,7 +41,6 @@ router.get('/:id', async (req, res) => {
     const producto = await DaoProductos.getById(id)
 
     res.json({msj: 'Producto por su ID', producto})
-    // console.log('Get /api/productos/:id')
 })
 
 router.post('/', upload.single('thumbnail'), async (req, res, next) => {
@@ -69,7 +67,7 @@ router.post('/', upload.single('thumbnail'), async (req, res, next) => {
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
-    // console.log('Post /api/productos')
+
 })
 
 router.put('/:id', async (req, res) => {
@@ -101,7 +99,7 @@ router.put('/:id', async (req, res) => {
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
-    // console.log('Put /api/productos/:id')
+
 })
 
 router.delete('/:id', async (req, res) => {
@@ -126,7 +124,7 @@ router.delete('/:id', async (req, res) => {
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.originalUrl}' método ${req.method} no autorizada`})
     }
-    // console.log('Delete /api/productos/:id')
+
 })
 
 export default router

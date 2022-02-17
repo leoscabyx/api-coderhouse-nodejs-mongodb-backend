@@ -14,7 +14,6 @@ router.get('/', (req, res) => {
         if (msg == 'listo') {
             forked.send(cant)
         } else {
-            // console.log('Done')
             res.json(msg)
         }
     })

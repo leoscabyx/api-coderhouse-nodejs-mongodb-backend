@@ -22,7 +22,7 @@ class ProductosDaoArchivo extends ContenedorArchivo {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

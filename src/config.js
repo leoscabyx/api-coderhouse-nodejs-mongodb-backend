@@ -14,5 +14,6 @@ export default {
     },
     firebase: {
         jsonDirCredential: './src/coderhouse-firestore-17035-firebase-adminsdk-7bvnl-c04028e58c.json'
-    }
+    },
+    MAIL_ADMIN: process.env.MAIL_ADMIN || 'leoscabyx@gmail.com'
 }

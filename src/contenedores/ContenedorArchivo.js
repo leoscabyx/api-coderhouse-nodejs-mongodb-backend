@@ -9,10 +9,10 @@ class ContenedorArchivo {
         try {
             if(!fs.existsSync(this.archivo)){
                 await fs.promises.writeFile(this.archivo, JSON.stringify([]))
-                console.log('Archivo TXT creado');
+                logger.info('Archivo TXT creado');
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -47,7 +47,7 @@ class ContenedorArchivo {
             return nuevoElemento.id
 
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
         
     }
@@ -70,7 +70,7 @@ class ContenedorArchivo {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -88,7 +88,7 @@ class ContenedorArchivo {
                 return JSON.parse(data)
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -105,7 +105,7 @@ class ContenedorArchivo {
                 if (carritoEliminado) {
                     const carritos = obtenerCarritos.filter(item => item.id !== parseInt(id))
                     await fs.promises.writeFile(this.archivo, JSON.stringify(carritos, null, 2))
-                    /* console.log(carritoEliminado) */
+
                     return carritoEliminado
                 }else{
                     return null
@@ -114,7 +114,7 @@ class ContenedorArchivo {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -127,7 +127,7 @@ class ContenedorArchivo {
             await fs.promises.writeFile(this.archivo, JSON.stringify([], null, 2))
             return 'Archivo vaciado'
         }catch(error){
-            console.log(error)
+            logger.error(error)
         }
     }
 

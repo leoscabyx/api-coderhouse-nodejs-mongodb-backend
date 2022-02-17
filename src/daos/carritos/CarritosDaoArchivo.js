@@ -18,7 +18,7 @@ class CarritosDaoArchivo extends ContenedorArchivo {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -42,7 +42,7 @@ class CarritosDaoArchivo extends ContenedorArchivo {
     
             return obtenerCarritos[indexCarrito].productos
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -69,7 +69,7 @@ class CarritosDaoArchivo extends ContenedorArchivo {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

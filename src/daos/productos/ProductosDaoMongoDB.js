@@ -39,7 +39,7 @@ class ProductosDaoMongoDB extends ContenedorMongoDB {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }

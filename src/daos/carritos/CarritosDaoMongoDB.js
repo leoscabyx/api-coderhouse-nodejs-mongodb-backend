@@ -1,16 +1,59 @@
 import ContenedorMongoDB from "../../contenedores/ContenedorMongoDB.js"
+import sendMail from '../../nodemailer/index.js'
+import sendWhatsapp from '../../twilio/whatsapp.js'
+import sendSMS from '../../twilio/sms.js'
+import config from '../../config.js'
 
 class CarritosDaoMongoDB extends ContenedorMongoDB {
 
     constructor() {
         super('carritos', {
             id: { type: Number, required: true },
+            idUser: { type: Number },
             timestamp: { type: Date, required: true },
             productos: { type: Array, required: true },
         })
     }
 
-    /* Listar todos los productos en el carrito pasado por id */
+    /* Enviar mail cuando un usuario finaliza compra */
+
+    async notificarCarrito(dataCarrito, dataUser){
+        const items = dataCarrito.productos.map(item => {
+            return `<li>${item.title} - Precio: ${item.price} * Cantidad: ${item.cantidad} = $ ${item.price * item.cantidad} </li>`
+        })
+        const body = `
+                    <h2>Listado de Productos</h2>
+                    <ul>
+                        ${items.join('')}
+                    </ul>
+                    `
+                    
+        await sendMail({
+            to: config.MAIL_ADMIN,
+            subject: `Nuevo Pedido de ${dataUser.username} (APP)`,
+            html: body
+                
+        })
+        await sendWhatsapp(`Nuevo Pedido de ${dataUser.username} (APP)`)
+        await sendSMS(`Gracias por comprar, tu pedido esta en camino xD`)
+
+    }
+
+    /* Obtener el carrito asociado a un usuario */
+    async getCarritoUser(idUser){
+        try {
+            const obtenerCarrito = await this.coleccion.findOne({idUser: idUser})
+            if (obtenerCarrito) {
+                return obtenerCarrito
+            }else{
+                return null
+            } 
+        } catch (error) {
+            logger.error(error)
+        }
+    }
+
+    /* Listar todos los productos en el carrito pasado el id del carrito solamente */
     async getProductsById(id){
         try {
             const obtenerCarrito = await this.getById(id)
@@ -20,7 +63,7 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -44,7 +87,7 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
             
             return productos
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 
@@ -71,7 +114,7 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
                 return null
             }
         } catch (error) {
-            console.log(error)
+            logger.error(error)
         }
     }
 }
