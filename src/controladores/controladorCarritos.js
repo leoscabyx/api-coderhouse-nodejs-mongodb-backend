@@ -1,18 +1,14 @@
-import { Router } from 'express'
-
 import { instanciasDaos } from '../daos/index.js'
 
-const router = Router();
-const DaoCarritos = instanciasDaos.DaoCarritos  
+const DaoCarritos = instanciasDaos.DaoCarritos 
 
-router.get('/', async (req, res) => {
+async function getCarritosController(req, res) {
     const carritos = await DaoCarritos.getAll()
 
     res.json({ msj: "Todos los productos", carritos })
+}
 
-})
-
-router.post('/',  async (req, res) => {
+async function postCarritosController(req, res) {
     const { productos } = req.body
 
     if(Array.isArray(productos) && productos.length === 0){
@@ -22,9 +18,9 @@ router.post('/',  async (req, res) => {
     }else{
         res.json({ msj: 'Se debe enviar un objeto con la propiedad productos y array vacio' })
     }
-})
+}
 
-router.delete('/:id', async (req, res) => {
+async function deleteCarritosByIdController(req, res) {
 
     const id = parseInt(req.params.id)
     
@@ -41,9 +37,9 @@ router.delete('/:id', async (req, res) => {
     const carrito = await DaoCarritos.deleteById(id)
 
     res.json({ msj: "Carrito Eliminado", carrito })
-})
+}
 
-router.get('/:id/productos', async (req, res) => {
+async function getProductosFromCarritosByIdController(req, res) {
 
     const id = parseInt(req.params.id)
     
@@ -60,9 +56,9 @@ router.get('/:id/productos', async (req, res) => {
     const productosCarrito = await DaoCarritos.getProductsById(id)
 
     res.json({ msj: "Productos por su ID de Carrito", data: {id: id, productos: productosCarrito} })
-})
+}
 
-router.post('/:id/productos', async (req, res) => {
+async function postProductosFromCarritosByIdController(req, res) {
     const id = parseInt(req.params.id)
     
     const carritos = await DaoCarritos.getAll()
@@ -90,9 +86,9 @@ router.post('/:id/productos', async (req, res) => {
     const productosCarrito = await DaoCarritos.saveProduct(id, producto)
 
     res.json({ msj: "Se ha insertado un producto en el carrito por su ID", data: {id: id, productos: productosCarrito} })
-})
+}
 
-router.delete('/:id/productos/:id__prod', async (req, res) => {
+async function deleteProductosFromCarritosById(req, res) {
 
     const id = parseInt(req.params.id)
     const id__prod = parseInt(req.params.id__prod)
@@ -114,7 +110,13 @@ router.delete('/:id/productos/:id__prod', async (req, res) => {
     }else{
         res.json({ msj: "No se ha podido Eliminar el producto del Carrito" })
     }
-})
+}
 
-
-export default router
+export {
+    getCarritosController,
+    postCarritosController,
+    deleteCarritosByIdController,
+    getProductosFromCarritosByIdController,
+    postProductosFromCarritosByIdController,
+    deleteProductosFromCarritosById
+}
