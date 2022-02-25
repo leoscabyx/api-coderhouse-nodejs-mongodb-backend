@@ -1,5 +1,7 @@
 import { instanciasDaos } from '../daos/index.js'
+import logger from '../logger.js'
 const DaoUsuarios = instanciasDaos.DaoUsuarios
+const DaoUsuarios2 = instanciasDaos.DaoUsuarios
 const DaoProductos = instanciasDaos.DaoProductos
 const DaoCarritos = instanciasDaos.DaoCarritos
 
@@ -60,6 +62,7 @@ async function getViewCheckout (req, res) {
 
 async function getViewPerfil (req, res) {
     const dataUser = await DaoUsuarios.getById(req.user.id)
+    logger.info(DaoUsuarios === DaoUsuarios2, "Comprobando si es la misma instancia")
     res.render('profile', { page: 'Perfil', perfil: dataUser })
 }
 
