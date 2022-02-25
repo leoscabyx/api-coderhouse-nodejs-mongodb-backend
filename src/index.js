@@ -2,23 +2,18 @@ import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IOServer } from 'socket.io'
 
-import { normalize, denormalize, schema } from 'normalizr'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import yargs from 'yargs'
 import cluster from 'cluster'
 import os from 'os'
 
-import routerProductos from './router/routerProductos.js'
-import routerCarritos from './router/routerCarritos.js'
-import routerVistas from './router/routerVistas.js'
-import routerAuth from './router/routerAuth.js'
-import routerTest from './router/routerTest.js'
-import { instanciasDaos } from './daos/index.js'
+import { routerProductos, routerCarritos, routerVistas, routerAuth, routerTest } from './router/index.js'
+
 import logger from './logger.js'
 import { passport } from './passport.js'
+import { setConnection } from './websocket/socket.js'
 
-const DaoMensajes = instanciasDaos.DaoMensajes
 const numCPUs = os.cpus().length
 
 /* Express */
@@ -65,46 +60,8 @@ app.all('*', (req, res) => {
     res.json({ error : -2, descripcion: `ruta '${req.url}' método ${req.method} no implementada`})
 })
 
-io.on('connection', async (socket) => { 
-    //"connection" se ejecuta la primera vez que se abre una nueva conexión
-    logger.info('Websocket: Usuario conectado') // Se imprimirá solo la primera vez que se ha abierto la conexión
-    // ContenedorMsjs.createtable()
-    const msjs = await DaoMensajes.getAll()
-
-    const user = new schema.Entity('users', {}, { idAttribute: 'email' })
-
-    const mensaje = new schema.Entity('mensajes', {
-        author: user
-    });
-
-    const chats = new schema.Entity('chats', {
-        mensajes: [mensaje]
-    });
-
-    const originalData = {
-        id: "999",
-        mensajes: msjs
-    }
-
-    const normalizedData = normalize(originalData, chats)
-
-    socket.on('msj', async (mensajeNuevo) => {
-        try {
-            await DaoMensajes.save(mensajeNuevo)
-            const msjs = await DaoMensajes.getAll()
-            const normalizedData = normalize({
-                id: "999",
-                mensajes: msjs
-            }, chats)
-
-            io.sockets.emit('msjs', normalizedData)
-        } catch (error) {
-            logger.error(error)
-        }
-    })
-
-    socket.emit('msjs', normalizedData) 
-})
+/* WebSocket */
+setConnection(io)
 
 const { puerto, modo } = yargs(process.argv.slice(2))
     .alias({
