@@ -43,4 +43,5 @@ switch (config.PERS) {
         break;
 }
 
+// Exportar la instancia de nuestros DAO's con unica instancia, pero multiples DAO's
 export { instanciasDaos } 
