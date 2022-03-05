@@ -7,7 +7,7 @@ const administrador = true
 
 async function getProductosController(req, res) {
     const productos = await DaoProductos.getAll()
-    res.json({msj: 'Todos los productos', productos})
+    res.status(200).json({msj: 'Todos los productos', productos})
 }
 
 async function getProductosByIdController(req, res){
@@ -16,16 +16,16 @@ async function getProductosByIdController(req, res){
     const arraysID = productos.map(prod => prod.id)
 
     if (isNaN(id)) {
-        return res.json({ error: 'El ID no es un numero' })
+        return res.status(401).json({ error: 'El ID no es un numero' })
     }
 
     if (!arraysID.includes(id)) {
-        return res.json({ error: 'El ID esta fuera del rango o no existe' })
+        return res.status(404).json({ error: 'El ID esta fuera del rango o no existe' })
     }
 
     const producto = await DaoProductos.getById(id)
 
-    res.json({msj: 'Producto por su ID', producto})
+    res.status(200).json({msj: 'Producto por su ID', producto})
 }
 
 async function postProductosController(req, res, next) {
@@ -48,7 +48,7 @@ async function postProductosController(req, res, next) {
 
         const id = await DaoProductos.save({ title, description, code, price: parseFloat(price), thumbnail, stock })
 
-        res.send({ msj: 'Se ha creado un nuevo producto y se devuelve su ID', id })
+        res.status(201).send({ msj: 'Se ha creado un nuevo producto y se devuelve su ID', id })
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
@@ -80,7 +80,7 @@ async function updatedProductosController(req, res) {
             thumbnail }
         const productoActualizado = await DaoProductos.updateById(producto, id)
     
-        res.json({msj: 'Producto Actualizado', producto: productoActualizado})
+        res.status(200).json({msj: 'Producto Actualizado', producto: productoActualizado})
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.url}' método ${req.method} no autorizada`})
     }
@@ -104,7 +104,7 @@ async function deleteProductosController(req, res) {
     
         const productoEliminado = await DaoProductos.deleteById(id)
     
-        res.json({msj: 'Producto Eliminado', producto: productoEliminado})
+        res.status(200).json({msj: 'Producto Eliminado', producto: productoEliminado})
 
     }else{
         res.json({ error : -1, descripcion: `ruta '${req.originalUrl}' método ${req.method} no autorizada`})
