@@ -1,0 +1,40 @@
+# Obtener todos los productos - GET All
+{
+    "query": "query { getProductos { id title, description, code, price, thumbnail, stock} }"
+}
+
+# Crear un producto - POST
+
+{
+    "query": "mutation { createProducto(datos: { title: \"Producto GraphQL\", description: \"Lorem GraphQL\", code: \"0511SS\", price: 1000, thumbnail: \"https://randomuser.me/api/portraits/lego/5.jpg\", stock: 100}) { id } }"
+}
+
+# Obtener por ID el producto - GET All
+{
+    "query": "query { getProducto(id: 17) { title, description, code, price, thumbnail, stock } }"
+}
+
+# Actualizar por ID el producto - PUT 
+{
+    "query": "mutation { updateProducto(id: 17, datos: { title: \"Producto Actualizado GraphQL\", description: \"Lorem Actualizado GraphQL\", code: \"2211AA\", price: 5000, thumbnail: \"https://randomuser.me/api/portraits/lego/5.jpg\", stock: 500}) { title description code price thumbnail stock } }"
+}
+
+# No me devuelve lo esperado con el update:
+
+# {
+#   "data": {
+#     "updateProducto": {
+#       "title": null,
+#       "description": null,
+#       "code": null,
+#       "price": null,
+#       "thumbnail": null,
+#       "stock": null
+#     }
+#   }
+# }
+
+# Eliminar por ID el producto - PUT
+{
+    "query": "mutation { deleteProducto(id: 17) { title, description, code, price, thumbnail, stock } }"
+}

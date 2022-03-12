@@ -28,7 +28,7 @@ class ContenedorMongoDB {
 
             await this.coleccion.create(nuevoElemento)
 
-            return nuevoElemento.id
+            return nuevoElemento
         } catch (error) {
             logger.error(error)
         }

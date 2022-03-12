@@ -1,6 +1,8 @@
 import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IOServer } from 'socket.io'
+import { graphqlHTTP } from 'express-graphql';
+import { buildSchema } from 'graphql';
 
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
@@ -9,6 +11,16 @@ import cluster from 'cluster'
 import os from 'os'
 
 import { routerProductos, routerCarritos, routerVistas, routerAuth, routerTest } from './router/index.js'
+/* import {
+    getProductosController,
+    getProductosByIdController,
+    postProductosController,
+    updatedProductosController,
+    deleteProductosController
+} from './controladores/controladorProductos.js' */
+import { instanciasDaos } from './daos/index.js'
+
+const DaoProductos = instanciasDaos.DaoProductos 
 
 import logger from './logger.js'
 import { passport } from './passport.js'
@@ -53,6 +65,49 @@ app.use('/api/carrito', routerCarritos)
 app.use('/', routerVistas)
 app.use('/', routerAuth)
 app.use('/', routerTest)
+
+const schema = buildSchema(`
+  type Producto {
+    id: ID!
+    title: String,
+    description: String,
+    code: String,
+    price: Int,
+    thumbnail: String,
+    stock: Int
+  }
+  input ProductoInput {
+    title: String,
+    description: String,
+    code: String,
+    price: Int,
+    thumbnail: String,
+    stock: Int
+  }
+  type Query {
+    getProducto(id: ID!): Producto,
+    getProductos: [Producto],
+  }
+  type Mutation {
+    createProducto(datos: ProductoInput): Producto,
+    updateProducto(id: ID!, datos: ProductoInput): Producto,
+    deleteProducto(id: ID!): Producto,
+  }
+`);
+
+/* GraphQL */
+
+app.use('/graphql/productos', graphqlHTTP({
+    schema: schema,
+    rootValue: {
+        getProducto: async ({ id }) => await DaoProductos.getById(id),
+        getProductos: async () => await DaoProductos.getAll(),
+        createProducto: async ({ datos }) => await DaoProductos.save(datos),
+        updateProducto: async ({ id, datos }) => await DaoProductos.updateById(datos, id),
+        deleteProducto: async ({ id }) => await DaoProductos.deleteById(id)
+    },
+    graphiql: true,
+ }));
 
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
