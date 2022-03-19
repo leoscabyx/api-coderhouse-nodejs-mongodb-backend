@@ -1,5 +1,7 @@
 import twilio from 'twilio'
 
+import logger from '../logger.js'
+
 const accountSid = 'AC8f6a2b7be1d4d1be66ce31ad415ca23f'
 const authToken = 'adf0709b3f34bc4d67e4a184faa09c54'
 
