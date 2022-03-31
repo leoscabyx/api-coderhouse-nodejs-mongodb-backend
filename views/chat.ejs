@@ -12,39 +12,28 @@
 <body>
     <%- include("./partials/header") %>
     <main>
-        <section class="seccion-info">
-            <% if (auth) { %>
-                <div class="alert">
-                    Bienvenido <%= nombre ? nombre : '' %>
-                    <a href="/logout">Desloguearse</a>
-                </div>
-            <% } %>
-        </section>
         <section class="section-chat">
             <div>
                 <h2>Centro de Mensajes</h2>
                 <h3 id="compresion"></h3>
                 <form action="/" method="post" id="formulario">
                     <div>
-                        <input type="email" name="email" placeholder="Ingresar email..." required value="leo@gmail.com">
+                        <input type="email" name="email" placeholder="Ingresar email..." required>
                     </div>
                     <div>
-                        <input type="text" name="nombre" placeholder="Ingresar nombre..." required value="Leo">
+                        <input type="text" name="nombre" placeholder="Ingresar nombre..." required>
                     </div>
                     <div>
-                        <input type="text" name="apellido" placeholder="Ingresar apellido..." required value="LS">
+                        <input type="text" name="apellido" placeholder="Ingresar apellido..." required>
                     </div>
                     <div>
-                        <input type="number" name="edad" placeholder="Ingresar edad..." required value="100">
-                    </div>
-                    <div>
-                        <input type="text" name="alias" placeholder="Ingresar alias..." required value="leoscabyx">
+                        <input type="text" name="alias" placeholder="Ingresar alias..." required>
                     </div>
                     <div>
                         <input type="text" name="avatar" placeholder="Ingresar avatar" required value="https://randomuser.me/api/portraits/lego/6.jpg">
                     </div>
                     <div>
-                        <input type="text" name="msj" placeholder="Ingresar msj" required value="algun texto">
+                        <input type="text" name="msj" placeholder="Ingresar msj" required>
                     </div>
                     <button>Enviar</button>
                 </form>
@@ -66,17 +55,15 @@
             let email = e.target[0].value
             let nombre = e.target[1].value
             let apellido = e.target[2].value
-            let edad = parseInt(e.target[3].value)
-            let alias = e.target[4].value
-            let avatar = e.target[5].value
-            let msj = e.target[6].value
+            let alias = e.target[3].value
+            let avatar = e.target[4].value
+            let msj = e.target[5].value
             let fecha = new Date()
             const nuevoMsj = { 
                 author: {
                     email,
                     nombre,
                     apellido,
-                    edad,
                     alias,
                     avatar
                 },

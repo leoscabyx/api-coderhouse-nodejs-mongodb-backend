@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import multer from 'multer'
+import upload from '../multer/index.js'
 
 import {
     getProductosController,
@@ -9,16 +9,7 @@ import {
     deleteProductosController
 } from '../controladores/controladorProductos.js'
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'public/uploads')
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname)
-    }
-})
-
-const upload = multer({ storage })
+import { authJWT } from '../jwt/index.js'
 
 const router = Router();
 
@@ -26,10 +17,10 @@ router.get('/', getProductosController)
 
 router.get('/:id', getProductosByIdController)
 
-router.post('/', upload.single('thumbnail'), postProductosController)
+router.post('/', authJWT, upload.single('thumbnail'), postProductosController)
 
-router.put('/:id', updatedProductosController)
+router.put('/:id', authJWT, upload.single('thumbnail'), updatedProductosController)
 
-router.delete('/:id', deleteProductosController)
+router.delete('/:id', authJWT, deleteProductosController)
 
 export default router

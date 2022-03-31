@@ -8,10 +8,8 @@ class ProductosDaoMongoDB extends ContenedorMongoDB {
             timestamp: { type: Date, required: true },
             title: { type: String, required: true },
             description: { type: String, required: true },
-            code: { type: String, required: true },
             price: { type: Number, required: true },
             thumbnail: { type: String, required: true },
-            stock: { type: Number, required: true },
         })
     }
 
@@ -22,14 +20,7 @@ class ProductosDaoMongoDB extends ContenedorMongoDB {
 
             if(obtenerProductos && obtenerProductos.length > 0) {
 
-                await this.coleccion.updateOne({id: id}, { $set: { 
-                    title: producto.title, 
-                    description: producto.description, 
-                    code: producto.code, 
-                    price: producto.price, 
-                    thumbnail: producto.thumbnail, 
-                    stock: producto.stock 
-                }})
+                await this.coleccion.updateOne({id: id}, { $set: { ...producto }})
     
                 const result = await this.coleccion.find({id: id})
     

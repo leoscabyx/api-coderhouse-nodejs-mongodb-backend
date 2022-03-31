@@ -1,38 +1,28 @@
 import { Router } from 'express'
-import { passport } from '../passport.js'
+import upload from '../multer/index.js'
 
 import {
-    getViewRegister,
-    redirectViewLogin,
-    getViewRegisterFail,
-    getViewLogin,
-    redirectViewInicio,
-    getViewLoginFail,
-    getViewLogout
+    postLoginController,
+    postRegisterController,
+    getUsers
 } from '../controladores/controladorAuth.js'
 
 const router = Router()
 
-router.get('/register', getViewRegister)
-
 router.post(
-    '/register',
-    passport.authenticate('register', { failureRedirect: '/failsignup' }), 
-    redirectViewLogin
+    '/register', 
+    upload.single('avatar'),
+    postRegisterController
 )
-
-router.get('/failsignup', getViewRegisterFail)
-
-router.get('/login', getViewLogin)
 
 router.post(
     '/login',
-    passport.authenticate('login', { failureRedirect: '/faillogin' }), 
-    redirectViewInicio
+    postLoginController
 )
 
-router.get('/faillogin', getViewLoginFail)
-
-router.get('/logout', getViewLogout)
+router.get(
+    '/',
+    getUsers
+)
 
 export default router

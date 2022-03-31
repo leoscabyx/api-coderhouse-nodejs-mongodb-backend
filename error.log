@@ -1,0 +1,1 @@
+[2022-03-30T14:41:22.241] [ERROR] prod - Error Conexion: 'No se pudo conectar a la base de datos de mongo local o atlas, revisar el servidor este iniciado'

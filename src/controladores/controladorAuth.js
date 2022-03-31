@@ -1,48 +1,94 @@
-function getViewRegister (req, res) {
-    res.render('register', { page: 'Registro' })
-}
+import pkg from 'bcrypt'
 
-function redirectViewLogin (req, res) {
-    res.redirect('/login')
-}
+import { instanciasDaos } from '../daos/index.js'
+import { tokenSign } from '../jwt/index.js'
+import logger from '../logger.js'
 
-function getViewRegisterFail (req, res) {
-    res.render('register-error', { page: 'Fail Register' })
-}
+const bcrypt = pkg
+const DaoUsuarios = instanciasDaos.DaoUsuarios
 
-function getViewLogin (req, res) {
-    res.render('login', { page: 'Login'})
-}
-
-function redirectViewInicio (req, res) {
-    res.redirect('/')
-}
-
-function getViewLoginFail (req, res) {
-    res.render('login-error', { page: 'Fail Login' })
-}
-
-function getViewLogout (req, res) {
-    if(req.user){
-        const username = req.user.username
-        req.session.destroy(err => {
-          if (err) {
-            res.json({ status: 'Logout ERROR', body: err })
-          } else {
-            res.render('logout', { page: 'Logout', username: username })
-          }
-        })
-    }else{
-        res.redirect('/login')
+async function postLoginController(req, res) {
+    try {
+        const body = req.body
+        const user = await DaoUsuarios.getByUser(body.email);
+        if (!user) {
+          res.status(404).json({ error: "Usuario NO Existe"})
+          return;
+        }
+        const checkPassword = bcrypt.compareSync(body.password, user.password)
+    
+        if (!checkPassword) {
+            res.status(402).json({ error: "Password Invalida"})
+          return;
+        }
+    
+        const tokenJwt = await tokenSign(user);
+    
+        const data = {
+          token: tokenJwt,
+          user: user,
+        };
+    
+        res.json({ data });
+    } catch (error) {
+        logger.error(error)
+        res.status(500).json({ error })
     }
 }
 
+async function postRegisterController(req, res, next) {
+    try {
+        
+        const file = req.file
+        let avatar = null
+
+        if(file){
+            const { filename } = req.file
+            avatar = `${req.protocol}://${req.get('host')}/uploads/${filename}`
+        }else if (req.body.avatar) {
+            avatar = req.body.avatar
+        }else{
+            const error = new Error('Please upload a file')
+            error.httpStatusCode = 400
+            return next(error)
+        }
+
+        const body = req.body
+        const checkIsExist = await DaoUsuarios.getByUser(body.email);
+
+        if (checkIsExist) {
+          res.status(401).json({ error: "Usuario ya Existe"})
+          return;
+        }
+        
+        const password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10), null)
+        const bodyInsert = { ...body, password, avatar };
+
+        const idUser = await DaoUsuarios.save(bodyInsert)
+        
+        if(!idUser) {
+            res.status(401).json({ error: "No se pudo crear el usuario" })
+        }else{
+            const data = {
+                id: idUser,
+                data: bodyInsert
+            }
+            res.status(200).json({ data })
+        }
+        
+    } catch (error) {
+        logger.error(error)
+        res.status(500).json({ error })
+    }
+}
+
+async function getUsers(req, res) {
+    const data = await DaoUsuarios.getAll();   
+    res.json({ data })
+}
+
 export {
-    getViewRegister,
-    redirectViewLogin,
-    getViewRegisterFail,
-    getViewLogin,
-    redirectViewInicio,
-    getViewLoginFail,
-    getViewLogout
+    postLoginController,
+    postRegisterController,
+    getUsers
 }
