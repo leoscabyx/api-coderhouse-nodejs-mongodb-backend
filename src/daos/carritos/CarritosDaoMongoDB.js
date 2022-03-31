@@ -1,7 +1,5 @@
 import ContenedorMongoDB from "../../contenedores/ContenedorMongoDB.js"
 import sendMail from '../../nodemailer/index.js'
-import sendWhatsapp from '../../twilio/whatsapp.js'
-import sendSMS from '../../twilio/sms.js'
 import config from '../../config.js'
 
 class CarritosDaoMongoDB extends ContenedorMongoDB {
@@ -30,12 +28,17 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
                     
         await sendMail({
             to: config.MAIL_ADMIN,
-            subject: `Nuevo Pedido de ${dataUser.username} (APP)`,
+            subject: `Nuevo Pedido de ${dataUser.email}  (APP)`,
             html: body
                 
         })
-        await sendWhatsapp(`Nuevo Pedido de ${dataUser.username} (APP)`)
-        await sendSMS(`Gracias por comprar, tu pedido esta en camino xD`)
+
+        await sendMail({
+            to: dataUser.email,
+            subject: `Detalle de tu Pedido (APP)`,
+            html: body
+                
+        })
 
     }
 
@@ -70,7 +73,7 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
     /* Agregar un producto al carrito pasado el id de carrito */
     async saveProduct(id, product){
         try {
-            const [ data ] = await this.coleccion.find({id: id}, {productos: 1, "_id": 0})
+            const [ data ] = await this.coleccion.find({ id: id }, { productos: 1, "_id": 0 })
             let { productos } = data
             
             const indexProduct = productos.findIndex(item => item.id === product.id)
@@ -95,12 +98,12 @@ class CarritosDaoMongoDB extends ContenedorMongoDB {
     async deleteProducto(idCarrito, idProducto) {
         try {
             const obtenerCarritos = await this.getAll()
-
+            console.log(obtenerCarritos)
             const indexCarrito = obtenerCarritos.findIndex(item => item.id === idCarrito)
-    
+            console.log(indexCarrito)
             if(indexCarrito !== -1) {
                 const existProduct = obtenerCarritos[indexCarrito].productos.find( item => item.id === idProducto)
-
+                console.log(existProduct)
                 if(existProduct){
                     const productosFiltrados = obtenerCarritos[indexCarrito].productos.filter( item => item.id !== idProducto)
     

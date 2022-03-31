@@ -4,3 +4,11 @@
 [2022-01-27T19:23:19.907] [WARN] default - ruta '/favicon.ico' método GET no implementada
 [2022-01-27T19:23:31.012] [WARN] default - ruta '/favicon.ico' método GET no implementada
 [2022-01-27T19:52:14.651] [WARN] default - ruta '/favicon.ico' método GET no implementada
+[2022-03-31T13:43:24.554] [ERROR] default - Error Conexion: 'No se pudo conectar a la base de datos de mongo local o atlas, revisar el servidor este iniciado'
+[2022-03-31T13:43:55.424] [ERROR] default - Error Conexion: 'No se pudo conectar a la base de datos de mongo local o atlas, revisar el servidor de mongodb este iniciado'
+[2022-03-31T13:44:20.803] [ERROR] default - Error Conexion: 'No se pudo conectar a la DB de mongo local o atlas, revisar el servidor de mongodb este iniciado'
+[2022-03-31T13:44:53.365] [ERROR] default - Error Conexion: 'No se pudo conectar a la DB de mongo local o atlas, revisar el servidor de mongodb este iniciado'
+[2022-03-31T13:45:03.285] [WARN] default - ruta '/' método GET no implementada
+[2022-03-31T13:45:03.552] [WARN] default - ruta '/favicon.ico' método GET no implementada
+[2022-03-31T13:46:09.561] [ERROR] default - Error Conexion: 'No se pudo conectar a la DB de mongo local o atlas, revisar el servidor de mongodb este iniciado'
+[2022-03-31T13:47:20.913] [ERROR] default - Error Conexion: 'No se pudo conectar a la DB de mongo local o atlas, revisar el servidor de mongodb este iniciado'

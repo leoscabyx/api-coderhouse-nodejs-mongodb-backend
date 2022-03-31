@@ -1,6 +1,6 @@
 import ContenedorMongoDB from "../../contenedores/ContenedorMongoDB.js"
-import sendMail from '../../nodemailer/index.js'
-import config from '../../config.js'
+// import sendMail from '../../nodemailer/index.js'
+// import config from '../../config.js'
 
 class UsuariosDaoMongoDB extends ContenedorMongoDB {
 
@@ -8,21 +8,19 @@ class UsuariosDaoMongoDB extends ContenedorMongoDB {
         super('usuarios', {
             id: { type: Number, required: true },
             timestamp: { type: Date, required: true },
-            username: { type: String, required: true },
-            password: { type: String, required: true },
             email: { type: String, required: true },
+            password: { type: String, required: true },
             nombre: { type: String, required: true },
-            direccion: { type: String, required: true },
-            edad: { type: Number, required: true },
             telefono: { type: String, required: true },
             avatar: { type: String, required: true },
+            role: { type: String, enum : ['user','admin'], default: "user"}
         })
     }
 
-    async getByUser(username) {
+    async getByUser(email) {
         try {
 
-            const usuarioEncontrado = await this.coleccion.findOne({ username: username })
+            const usuarioEncontrado = await this.coleccion.findOne({ email: email })
             
             if(usuarioEncontrado){
                 return usuarioEncontrado
@@ -37,7 +35,7 @@ class UsuariosDaoMongoDB extends ContenedorMongoDB {
 
     /* Enviar mail cuando un usuario se registra */
 
-    async newUserSendMail(data){
+    /* async newUserSendMail(data){
         await sendMail({
             to: config.MAIL_ADMIN,
             subject: 'Nuevo Registro Usuario (APP)',
@@ -49,7 +47,7 @@ class UsuariosDaoMongoDB extends ContenedorMongoDB {
                     Avatar: ${data.avatar}
                     `
         })
-    }
+    } */
 }
 
 export default UsuariosDaoMongoDB

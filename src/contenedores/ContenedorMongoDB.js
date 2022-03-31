@@ -1,12 +1,15 @@
 import mongoose from 'mongoose'
 
 import config from '../config.js'
+import logger from '../logger.js'
 
 const { Schema } = mongoose;
 
-// await mongoose.connect('mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority');
-await mongoose.connect(config.mongodb.cnxStr);
-
+try {
+    await mongoose.connect(config.mongodb.cnxStr, { serverSelectionTimeoutMS: 2000 });
+} catch (error) {
+    logger.error(`Error Conexion: 'No se pudo conectar a la DB de mongo local o atlas, revisar el servidor de mongodb este iniciado'`);
+}
 
 class ContenedorMongoDB {
     constructor(nombreColeccion, esquema) {
@@ -14,8 +17,9 @@ class ContenedorMongoDB {
         this.coleccion = mongoose.model(nombreColeccion, this.schema)
     }
 
-    async save(nuevoElemento){
+    async save(elemento){
         try {
+            const nuevoElemento = { ...elemento }
             const data = await this.coleccion.find()
 
             if(data.length === 0){
@@ -39,7 +43,7 @@ class ContenedorMongoDB {
         try {
             const data = await this.getAll()
             if(data && data.length > 0) {
-                const dataEncontrado = await this.coleccion.findOne({id: id})
+                const dataEncontrado = await this.coleccion.findOne({id: id}, { "_id": 0, "__v": 0 }) 
 
                 if (dataEncontrado) {
                     return dataEncontrado
@@ -57,7 +61,7 @@ class ContenedorMongoDB {
     /* Devuelve un array con los objetos presentes */
     async getAll() {   
         try {
-            const data = await this.coleccion.find()
+            const data = await this.coleccion.find({}, { "_id": 0, "__v": 0 })
             
             if (!data) {
                 return null

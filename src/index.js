@@ -2,16 +2,12 @@ import express from 'express'
 import { Server as HttpServer } from 'http'
 import { Server as IOServer } from 'socket.io'
 
-import session from 'express-session'
-import MongoStore from 'connect-mongo'
 import yargs from 'yargs'
 import cluster from 'cluster'
 import os from 'os'
 
-import { routerProductos, routerCarritos, routerVistas, routerAuth, routerTest } from './router/index.js'
-
+import { routerProductos, routerCarritos, routerVistas, routerAuth } from './router/index.js'
 import logger from './logger.js'
-import { passport } from './passport.js'
 import { setConnection } from './websocket/socket.js'
 
 const numCPUs = os.cpus().length
@@ -25,34 +21,17 @@ const io = new IOServer(httpServer)
 app.set("view engine", "ejs")
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use(session({
-    store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://leoscabyx:coderhouse@cluster0.fwnwb.mongodb.net/ecommerce?retryWrites=true&w=majority',
-        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-        ttl: 24 * 60 * 60
-    }),
-    secret: 'secreto',
-    resave: false,
-    saveUninitialized: false,
-    // cookie: {
-    //     maxAge: 10000
-    // }
-}))
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use('/', express.static('public'))
-app.use('/uploads', express.static('public/uploads'))
+
 app.use((req, res, next) => {
     logger.info(`Ruta: '${req.url}' Método: ${req.method}`)
     next()
 })
 
+app.use('/api/auth', routerAuth)
 app.use('/api/productos', routerProductos)
 app.use('/api/carrito', routerCarritos)
 app.use('/', routerVistas)
-app.use('/', routerAuth)
-app.use('/', routerTest)
 
 /* Manejar cualquier ruta que no este implementada en el servidor */
 app.all('*', (req, res) => {
@@ -101,6 +80,7 @@ if(modo === 'cluster'){
         })
     }
 }else{
+    logger.info(`Env: ${process.env.NODE_ENV || 'dev'}`)
     logger.info(`Modo: ${modo}`)
     logger.info(`Numero CPU's: ${numCPUs}`)
 

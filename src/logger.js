@@ -35,7 +35,7 @@ log4js.configure({
 
 let logger = null
 
-if (process.env.NODE_ENV === 'PROD') {
+if (process.env.NODE_ENV === 'prod') {
     logger = log4js.getLogger('prod')
   } else {
     logger = log4js.getLogger()
